@@ -4,7 +4,7 @@ The shell scripts that I use for daily tasks.
 
 ## Log parser 1
 
-This script is parsing journalctl logs, looking for a message from the websocket tunnel service(s) that indicates a port scan. Then the script extracts unique IPs and whois them to their country and address, number of requests, also adding the request that was used in the port scan. The script is run with `./checkrejected.sh | tee rejected-analysis.txt`.
+This script is parsing journalctl logs, looking for a message from the websocket tunnel service(s) that indicates a port scan. Then the script extracts unique IPs and whois them to their country and address, adding number of requests and the request that was used in the connection attempt. The script is run with `./checkrejected.sh | tee rejected-analysis.txt`.
 
 ```
 #!/bin/bash
