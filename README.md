@@ -58,8 +58,8 @@ exit 1
 
 trap controlc SIGINT
 
-for file in $(find . -type f -name "*.7z"); do
-7z t "$file" >/dev/null
+for file in $(find . -type f -name "*.7z" | sort -n); do
+7z t "$file" >/dev/null 2>&1
 if [ $? -ne 0 ]; then
 echo "File $file is corrupted"
 else
@@ -81,7 +81,7 @@ exit 1
 
 trap controlc SIGINT
 
-for file in $(find . -type f -name "*.7z"); do
+for file in $(find . -type f -name "*.7z" | sort -n); do
 echo "Searching $file..." | tee -a report.txt
 7z e -so ${file} | grep --color=always -n "$1" | tee -a report.txt
 done
