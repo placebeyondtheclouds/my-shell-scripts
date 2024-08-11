@@ -70,7 +70,7 @@ done
 
 ## Find a string within a file within 7z archives
 
-The archive is extracted to the standard output and then grepped for the string. Needs optimization
+The archive is extracted to the standard output and then grepped for the string. `tar -xzOf` for tar.gz and `zcat` for gz. Needs optimization.
 
 ```
 #!/bin/bash
