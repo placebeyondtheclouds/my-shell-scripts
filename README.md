@@ -93,3 +93,5 @@ done
 Inspired by a line from Heath Adams course on privesc
 
 `grep --color=always -rn '.' --include \*.sh -ie "/dev/tcp/" 2>/dev/null`
+
+`grep --color=always -rn '/' -ie "password" 2>/dev/null`
