@@ -87,3 +87,7 @@ echo "Searching $file..." | tee -a report.txt
 done
 
 ```
+
+## Find and highlight a string within all files
+
+`grep --color=always -rnw '.' --include \*.sh -ie "/dev/tcp/" 2>/dev/null`
