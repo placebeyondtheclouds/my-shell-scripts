@@ -90,4 +90,6 @@ done
 
 ## Find and highlight a string within all files
 
+Inspired by a line from Heath Adams course on privesc
+
 `grep --color=always -rnw '.' --include \*.sh -ie "/dev/tcp/" 2>/dev/null`
