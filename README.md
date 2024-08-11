@@ -22,7 +22,7 @@ journalctl | grep "$messagetolookfor" >badreqs.txt
 cat badreqs.txt | cut -d ":" -f 9 | tr -d "]" >rejectedips.txt
 
 sort rejectedips.txt | uniq | grep -v '^$' | while read ip; do
-    echo -n "$ip":
+echo -n "$ip":
 {
 whois "$ip" | grep country -i -m 1 | cut -d ':' -f 2 | xargs
 whois "$ip" | grep address -i -m 1 | cut -d ':' -f 2 | xargs
@@ -46,3 +46,45 @@ SystemMaxUse=5000M
 `sudo mkdir /var/log/journal`
 
 `sudo systemctl restart systemd-journald`
+
+## Check 7z files for errors
+
+```
+#!/bin/bash
+
+controlc() {
+exit 1
+}
+
+trap controlc SIGINT
+
+for file in $(ls *.7z | tr " " "\n"); do
+
+7z t $file >/dev/null
+if [ $? -ne 0 ]; then
+echo "File $file is corrupted"
+else
+echo "File $file is OK"
+fi
+done
+```
+
+## Find a string within a file within 7z archives in the current directory
+
+The archive is extracted to the standard output and then grepped for the string. Needs optimization
+
+```
+#!/bin/bash
+
+controlc() {
+exit 1
+}
+
+trap controlc SIGINT
+
+for file in $(ls *.7z | tr " " "\n"); do
+echo "Searching $file..." | tee -a report.txt
+7z e -so ${file} | grep "$1" -A 1 | tee -a report.txt
+done
+
+```
