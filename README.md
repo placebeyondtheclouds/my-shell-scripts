@@ -83,7 +83,7 @@ trap controlc SIGINT
 
 for file in $(find . -type f -name "*.7z"); do
 echo "Searching $file..." | tee -a report.txt
-7z e -so ${file} | grep "$1" -A 1 | tee -a report.txt
+7z e -so ${file} | grep --color=always -n "$1" | tee -a report.txt
 done
 
 ```
@@ -92,4 +92,4 @@ done
 
 Inspired by a line from Heath Adams course on privesc
 
-`grep --color=always -rnw '.' --include \*.sh -ie "/dev/tcp/" 2>/dev/null`
+`grep --color=always -rn '.' --include \*.sh -ie "/dev/tcp/" 2>/dev/null`
