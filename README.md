@@ -58,9 +58,8 @@ exit 1
 
 trap controlc SIGINT
 
-for file in $(ls *.7z | tr " " "\n"); do
-
-7z t $file >/dev/null
+for file in $(find . -type f -name "*.7z"); do
+7z t "$file" >/dev/null
 if [ $? -ne 0 ]; then
 echo "File $file is corrupted"
 else
@@ -69,7 +68,7 @@ fi
 done
 ```
 
-## Find a string within a file within 7z archives in the current directory
+## Find a string within a file within 7z archives
 
 The archive is extracted to the standard output and then grepped for the string. Needs optimization
 
@@ -82,7 +81,7 @@ exit 1
 
 trap controlc SIGINT
 
-for file in $(ls *.7z | tr " " "\n"); do
+for file in $(find . -type f -name "*.7z"); do
 echo "Searching $file..." | tee -a report.txt
 7z e -so ${file} | grep "$1" -A 1 | tee -a report.txt
 done
