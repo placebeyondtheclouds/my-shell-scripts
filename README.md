@@ -60,6 +60,7 @@ trap controlc SIGINT
 
 allfiles=$(find . -type f \( -name "*.7z" -o -name "*.tar.gz" -o -name "*.gz" \) 2>/dev/null | sort -n)
 echo "Total files: $(echo "$allfiles" | wc -l)"
+rm -f fileswitherrors.txt
 
 for file in $allfiles; do
   if [[ "$file" == *.7z ]]; then
@@ -76,7 +77,7 @@ for file in $allfiles; do
     echo -n "."
   fi
 done
-#for file in $(cat fileswitherrors.txt | cut -d " " -f 3); do rm $file; done
+#for file in $(cat fileswitherrors.txt | cut -d " " -f 3); do rm -f $file; done
 ```
 
 ## Find a string within a file within 7z archives
