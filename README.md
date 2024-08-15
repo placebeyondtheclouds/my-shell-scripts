@@ -76,6 +76,7 @@ for file in $allfiles; do
     echo -n "."
   fi
 done
+#for file in $(cat fileswitherrors.txt | cut -d " " -f 3); do rm $file; done
 ```
 
 ## Find a string within a file within 7z archives
