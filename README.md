@@ -2,36 +2,10 @@
 
 The shell scripts that I use for daily tasks.
 
-## Log parser 1
+## Log parser for journalctl
 
-This script is parsing journalctl logs, looking for a message from the websocket tunnel service(s) that indicates a port scan. Then the script extracts unique IPs and whois them to their country and address, adding number of requests and the request that was used in the connection attempt. The script is run with `./checkrejected.sh | tee rejected-analysis.txt`.
-
-```
-#!/bin/bash
-
-
-controlc() {
-exit 1
-}
-
-trap controlc SIGINT
-
-messagetolookfor="Rejecting connection with bad upgrade request"
-
-journalctl | grep "$messagetolookfor" >badreqs.txt
-cat badreqs.txt | cut -d ":" -f 9 | tr -d "]" >rejectedips.txt
-
-sort rejectedips.txt | uniq | grep -v '^$' | while read ip; do
-echo -n "$ip":
-{
-whois "$ip" | grep country -i -m 1 | cut -d ':' -f 2 | xargs
-whois "$ip" | grep address -i -m 1 | cut -d ':' -f 2 | xargs
-grep -o "$ip" rejectedips.txt | wc -l
-cat badreqs.txt | grep "$ip" | cut -d "/" -f 2-
-} | tr "\n" " "
-echo -e "\r"
-done
-```
+This script is parsing journalctl logs, looking for an error message from the websocket tunnel service(s) that indicates a port scan. Then the script extracts unique IPs and whois them to their country and address, adding number of requests and the request that was used in the connection attempt. The script is run with `./checkrejected.sh | tee rejected-analysis.txt`.
+Link to the file: [checkrejected.sh](checkrejected.sh)
 
 The journalctl is set to preserve the logs
 
@@ -47,61 +21,15 @@ SystemMaxUse=5000M
 
 `sudo systemctl restart systemd-journald`
 
-## Check archives for errors
+## Check archives in current directory for errors
 
-```
-#!/bin/bash
+Usage: `./checkarchives.sh`
+Link to the file: [checkarchives.sh](checkarchives.sh)
 
-controlc() {
-exit 1
-}
+## Find a string within a file within archives in current directory
 
-trap controlc SIGINT
-
-allfiles=$(find . -type f \( -name "*.7z" -o -name "*.tar.gz" -o -name "*.gz" \) 2>/dev/null | sort -n)
-echo "Total files: $(echo "$allfiles" | wc -l)"
-echo > fileswitherrors.txt
-
-for file in $allfiles; do
-  if [[ "$file" == *.7z ]]; then
-    7z t "$file" >/dev/null 2>&1
-  elif [[ "$file" == *.tar.gz ]]; then
-    tar -tzf "$file" >/dev/null 2>&1
-  elif [[ "$file" == *.gz ]]; then
-    gunzip -t "$file" >/dev/null 2>&1
-  fi
-
-  if [ $? -ne 0 ]; then
-    echo -e "\n File $file is corrupted" | tee -a fileswitherrors.txt
-  else
-    echo -n "."
-  fi
-done
-#for file in $(cat fileswitherrors.txt | cut -d " " -f 3); do rm -f $file; done
-```
-
-## Find a string within a file within 7z archives
-
-The archive is extracted to the standard output and then grepped for the string. `tar -xzOf` for tar.gz, `zcat` or use zgrep directly for gz. Needs optimization.
-
-```
-#!/bin/bash
-
-controlc() {
-exit 1
-}
-
-trap controlc SIGINT
-
-for file in $(find . -type f -name "*.7z" | sort -n); do
-echo "Searching $file..." | tee -a report.txt
-7z e -so ${file} | grep --color=always -n "$1" | tee -a report.txt
-#tar -xzOf ${file} | grep --color=always -n "$1" | tee -a report.txt
-#zcat ${file} | grep --color=always -n "$1" | tee -a report.txt
-#zgrep --color=always -n "$1" ${file} | tee -a report.txt
-done
-
-```
+The archive is extracted to the standard output and then grepped for the string. Needs optimization. Run with `./findinarch.sh "string"`.
+Link to the file: [findinarch.sh](findinarch.sh)
 
 ## Find and highlight a string within all files
 
