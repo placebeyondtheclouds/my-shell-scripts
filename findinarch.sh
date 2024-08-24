@@ -5,7 +5,10 @@ controlc() {
 }
 
 trap controlc SIGINT
+
 allfiles=$(find . -type f \( -name "*.7z" -o -name "*.tar.gz" -o -name "*.gz" \) 2>/dev/null | sort -n)
+echo "Total files: $(echo "$allfiles" | wc -l)"
+echo >report.txt
 
 for file in $allfiles; do
     echo "Searching $file..." | tee -a report.txt
