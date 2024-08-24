@@ -82,7 +82,7 @@ done
 
 ## Find a string within a file within 7z archives
 
-The archive is extracted to the standard output and then grepped for the string. `tar -xzOf` for tar.gz and `zcat` for gz. Needs optimization.
+The archive is extracted to the standard output and then grepped for the string. `tar -xzOf` for tar.gz, `zcat` or use zgrep directly for gz. Needs optimization.
 
 ```
 #!/bin/bash
@@ -96,6 +96,9 @@ trap controlc SIGINT
 for file in $(find . -type f -name "*.7z" | sort -n); do
 echo "Searching $file..." | tee -a report.txt
 7z e -so ${file} | grep --color=always -n "$1" | tee -a report.txt
+#tar -xzOf ${file} | grep --color=always -n "$1" | tee -a report.txt
+#zcat ${file} | grep --color=always -n "$1" | tee -a report.txt
+#zgrep --color=always -n "$1" ${file} | tee -a report.txt
 done
 
 ```
