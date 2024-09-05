@@ -41,4 +41,4 @@ Inspired by a line from Heath Adams course on privesc
 
 ## start multiple ollama serve
 
-[ollama.sh](ollama.sh)
+[ollamaparallel.sh](ollamaparallel.sh)
