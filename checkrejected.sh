@@ -12,6 +12,7 @@ journalctl | grep "$messagetolookfor" >badreqs.txt
 cat badreqs.txt | cut -d ":" -f 9 | tr -d "]" >rejectedips.txt
 
 sort rejectedips.txt | uniq | grep -v '^$' | while read ip; do
+    trap controlc SIGINT
     echo -n "$ip":
     {
         whois "$ip" | grep country -i -m 1 | cut -d ':' -f 2 | xargs
