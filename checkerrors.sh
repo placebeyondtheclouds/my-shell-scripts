@@ -4,7 +4,6 @@ controlc() {
     exit 1
 }
 
-trap controlc SIGINT
 messagetolookfor="error while accepting TLS connection"
 
 journalctl | grep "$messagetolookfor" >errors.txt

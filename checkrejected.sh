@@ -4,8 +4,6 @@ controlc() {
     exit 1
 }
 
-trap controlc SIGINT
-
 messagetolookfor="Rejecting connection with bad upgrade request"
 
 journalctl | grep "$messagetolookfor" >badreqs.txt

@@ -42,3 +42,9 @@ Inspired by a line from Heath Adams course on privesc
 ## start multiple ollama serve
 
 [ollamaparallel.sh](ollamaparallel.sh)
+
+## Archive directories of a current directory into tar.gz files
+
+If run with a parameter of a path, the script will save the archives to the path. Otherwise, the archives will be saved to the current directory. Uncomment needed parts of the code.
+`./archivedirs.sh /path/to/save` without the trailing slash.
+[archivedirs.sh](archivedirs.sh)
