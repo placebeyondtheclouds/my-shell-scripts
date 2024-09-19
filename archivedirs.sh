@@ -27,23 +27,37 @@ for onedir in "${alldirs[@]}"; do
 done
 
 # list archives
-declare -a archivefiles
-IFS=$'\n'
-for line in $(find "$ARCHIVE_DESTINATION" -type f -name "*.tar" 2>/dev/null | sort -n); do
-    archivefiles+=("$line")
-done
+# declare -a archivefiles
+# IFS=$'\n'
+# for line in $(find "$ARCHIVE_DESTINATION" -type f -name "*.tar" 2>/dev/null | sort -n); do
+#     archivefiles+=("$line")
+# done
 
 # test
-for onearchive in "${archivefiles[@]}"; do
-    trap controlc SIGINT
-    echo -n "Testing $onearchive..."
-    tar -tf "$onearchive" >/dev/null 2>&1
-    if [ $? -ne 0 ]; then
-        echo -e "\n File $onearchive is corrupted" | tee -a archiveswitherrors.txt
-    else
-        echo -n "."
-    fi
-done
+# for onearchive in "${archivefiles[@]}"; do
+#     trap controlc SIGINT
+#     echo -n "Testing $onearchive..."
+#     tar -tf "$onearchive" >/dev/null 2>&1
+#     if [ $? -ne 0 ]; then
+#         echo -e "\n File $onearchive is corrupted" | tee -a archiveswitherrors.txt
+#     else
+#         echo -n "."
+#     fi
+# done
+
+# merge
+# firstarchive=${archivefiles[0]}
+# for ((i = 1; i < ${#archivefiles[@]}; i++)); do
+#     if [ $(tar -tf "${archivefiles[$i]}" | wc -l) -eq 0 ]; then
+#         echo "del empty: ${archivefiles[$i]}"
+#         rm "${archivefiles[$i]}"
+#         continue
+#     fi
+#     tar -Af "$firstarchive" "${archivefiles[$i]}"
+#     rm -f "${archivefiles[$i]}"
+# done
+# mv "$firstarchive" "merged.tar"
+# echo "chunks in the archive:" $(tar -tf "merged.tar" | wc -l)
 
 #delete dirs
 # for onedir in ${alldirs[@]}; do
@@ -56,6 +70,3 @@ done
 #     trap controlc SIGINT
 #     tar -xf "$onearchive"
 # done
-
-#list the contents of the archive
-#tar -tf archive.tar
