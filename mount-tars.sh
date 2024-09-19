@@ -51,7 +51,6 @@ while true; do
     read -n 1 -s -r -p "" key
     case $key in
     m)
-
         # mount
         for ((i = 0; i < ${#archivefiles[@]}; i++)); do
             basename="${archivefiles[$i]##*/}"
