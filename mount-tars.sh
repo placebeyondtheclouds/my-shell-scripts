@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 controlc() {
     exit 1
@@ -27,39 +27,40 @@ if [ ! -d "$SOURCE_ARCHIVES" ]; then
     exit 1
 fi
 
+#list archives
+declare -a archivefiles
+IFS=$'\n'
+for line in $(find "$SOURCE_ARCHIVES" -type f -name "*.tar" 2>/dev/null | sort -n); do
+    archivefiles+=("$line")
+done
+echo "archive count: ${#archivefiles[@]}"
+echo "${archivefiles[@]}"
+
+# list mounts
+declare -a alldirs
+IFS=$'\n'
+for line in $(find "$MOUNT_DESTINATION" -maxdepth 1 -type d 2>/dev/null | grep -v "$SKIPKEYWORD" | grep -v "^\.$" | grep -v "^\.\.$" | sort -n); do
+    alldirs+=("$line")
+done
+alldirs=("${alldirs[@]:1}")
+echo "mount points to unmount: ${#alldirs[@]}"
+echo "${alldirs[@]}"
+
 echo "press [m] to mount, [u] to unmount, [q] to quit"
 while true; do
     read -n 1 -s -r -p "" key
     case $key in
     m)
-        #list archives
-        declare -a archivefiles
-        IFS=$'\n'
-        for line in $(find "$SOURCE_ARCHIVES" -type f -name "*.tar" 2>/dev/null | sort -n); do
-            archivefiles+=("$line")
-        done
-        echo "archive count: ${#archivefiles[@]}"
-        echo "${archivefiles[@]}"
 
         # mount
         for ((i = 0; i < ${#archivefiles[@]}; i++)); do
-            basename=${archivefiles[$i]##*/}
-            basename=${basename%%.*}
+            basename="${archivefiles[$i]##*/}"
             ratarmount "${archivefiles[$i]}" "$MOUNT_DESTINATION/${basename}"
         done
         exit 0
         ;;
     u)
         # unmount
-        declare -a alldirs
-        IFS=$'\n'
-        for line in $(find "$MOUNT_DESTINATION" -maxdepth 1 -type d 2>/dev/null | grep -v "$SKIPKEYWORD" | grep -v "^\.$" | grep -v "^\.\.$" | sort -n); do
-            alldirs+=("$line")
-        done
-        # exclude the MOUNT_DESTINATION directory itself
-        alldirs=("${alldirs[@]:1}")
-        echo "mount points to unmount: ${#alldirs[@]}"
-        echo "${alldirs[@]}"
         for onedir in "${alldirs[@]}"; do
             trap controlc SIGINT
             echo "Unmounting $onedir..."
