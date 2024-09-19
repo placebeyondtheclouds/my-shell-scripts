@@ -11,7 +11,8 @@ SKIPKEYWORD=".ipynb_checkpoints"
 #checks
 if [ -z "$SOURCE_ARCHIVES" ] || [ -z "$MOUNT_DESTINATION" ]; then
     echo "Usage: $0 <SOURCE_ARCHIVES> <MOUNT_DESTINATION>"
-    echo "Example: $0 /mnt/sams2T_crypt_vg_data/datasets ./source_datasets"
+    echo "Universal example: $0 /mnt/sams2T_crypt_vg_data/datasets ./source_datasets"
+    echo "Unmount all: $0 unmount ./source_datasets"
     exit 1
 fi
 if [ ! -d "$MOUNT_DESTINATION" ]; then
@@ -21,9 +22,11 @@ if [ ! -d "$MOUNT_DESTINATION" ]; then
     echo "Failed to create $MOUNT_DESTINATION"
     exit 1
 fi
-if [ ! -d "$SOURCE_ARCHIVES" ]; then
-    echo "No such directory: $SOURCE_ARCHIVES"
-    exit 1
+if [ "$SOURCE_ARCHIVES" != "unmount" ]; then
+    if [ ! -d "$SOURCE_ARCHIVES" ]; then
+        echo "No such directory: $SOURCE_ARCHIVES"
+        exit 1
+    fi
 fi
 
 echo "press [m] to mount, [u] to unmount, [q] to quit"
