@@ -83,9 +83,22 @@ list_archives "$SOURCE_ARCHIVES"
 list_mounts "$MOUNT_DESTINATION" "$SKIPKEYWORD"
 
 while true; do
+    cat <<"EOF"
+    
+            Oo               Oo             
+           o  O             o  O            
+          O    o           O    o           
+ooooooooo                         ooooooooo 
+                                            
+ooooooooo                         ooooooooo 
+                                            
+                                            
+                 ooooooooo                  
+                                                                                                                 
+EOF
     echo "press [m] to mount, [u] to unmount, [q] to quit"
     read -n 1 -s -r -p "" key
-    echo "----------------"
+
     case $key in
     m)
         # mount
