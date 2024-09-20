@@ -8,6 +8,9 @@ SOURCE_ARCHIVES=$1
 MOUNT_DESTINATION=$2
 SKIPKEYWORD=".ipynb_checkpoints"
 
+declare -a archivefiles
+declare -a alldirs
+
 cat <<"EOF"
                                      __                                     ______  ______   ____               
  /'\_/`\                           /\ \__                                 /\__  _\/\  _  \ /\  _`\             
@@ -38,52 +41,66 @@ if [ ! -d "$SOURCE_ARCHIVES" ]; then
     exit 1
 fi
 
-#list archives
-# generate a separator
-
-declare -a archivefiles
-IFS=$'\n'
-for line in $(find "$SOURCE_ARCHIVES" -type f -name "*.tar" 2>/dev/null | sort -n); do
-    archivefiles+=("$line")
-done
-cat <<"EOF"
+list_archives() {
+    local SOURCE_ARCHIVES=$1
+    archivefiles=()
+    IFS=$'\n'
+    for line in $(find "$SOURCE_ARCHIVES" -type f -name "*.tar" 2>/dev/null | sort -n); do
+        archivefiles+=("$line")
+    done
+    cat <<"EOF"
  _____  _    ___        __                      _  _ 
 |_   _|/_\  | _ \ ___  / _| ___  _  _  _ _   __| |(_)
   | | / _ \ |   /(_-< |  _|/ _ \| || || ' \ / _` | _ 
   |_|/_/ \_\|_|_\/__/ |_|  \___/ \_,_||_||_|\__,_|(_)
                                                                                 
 EOF
-echo "archive count: ${#archivefiles[@]}"
-echo "${archivefiles[@]}"
+    echo "archive count: ${#archivefiles[@]}"
+    echo "${archivefiles[@]}"
+}
 
-# list mounts
-declare -a alldirs
-IFS=$'\n'
-for line in $(find "$MOUNT_DESTINATION" -maxdepth 1 -type d 2>/dev/null | grep -v "$SKIPKEYWORD" | grep -v "^\.$" | grep -v "^\.\.$" | sort -n); do
-    alldirs+=("$line")
-done
-alldirs=("${alldirs[@]:1}")
-cat <<"EOF"
+list_mounts() {
+    local MOUNT_DESTINATION=$1
+    local SKIPKEYWORD=$2
+    alldirs=()
+    IFS=$'\n'
+    for line in $(find "$MOUNT_DESTINATION" -maxdepth 1 -type d 2>/dev/null | grep -v "$SKIPKEYWORD" | grep -v "^\.$" | grep -v "^\.\.$" | sort -n); do
+        alldirs+=("$line")
+    done
+    alldirs=("${alldirs[@]:1}")
+    cat <<"EOF"
                         _          __                      _  _ 
  _ __   ___  _  _  _ _ | |_  ___  / _| ___  _  _  _ _   __| |(_)
 | '  \ / _ \| || || ' \|  _|(_-< |  _|/ _ \| || || ' \ / _` | _ 
 |_|_|_|\___/ \_,_||_||_|\__|/__/ |_|  \___/ \_,_||_||_|\__,_|(_)
-                                                                                                                                     
+                                                                        
 EOF
-echo "mount points to unmount: ${#alldirs[@]}"
-echo "${alldirs[@]}"
+    echo "mount points to unmount: ${#alldirs[@]}"
+    echo "${alldirs[@]}"
+}
 
-echo "press [m] to mount, [u] to unmount, [q] to quit"
+list_archives "$SOURCE_ARCHIVES"
+list_mounts "$MOUNT_DESTINATION" "$SKIPKEYWORD"
+
 while true; do
+    echo "press [m] to mount, [u] to unmount, [q] to quit"
     read -n 1 -s -r -p "" key
+    echo "----------------"
     case $key in
     m)
         # mount
         for ((i = 0; i < ${#archivefiles[@]}; i++)); do
             basename="${archivefiles[$i]##*/}"
-            ratarmount "${archivefiles[$i]}" "$MOUNT_DESTINATION/${basename}"
+            destination="$MOUNT_DESTINATION/${basename}"
+
+            if [ -e "$destination" ]; then
+                echo "Skipping ${basename}, its already mounted in $destination"
+            else
+                ratarmount "${archivefiles[$i]}" "$destination"
+            fi
         done
-        exit 0
+        list_archives "$SOURCE_ARCHIVES"
+        list_mounts "$MOUNT_DESTINATION" "$SKIPKEYWORD"
         ;;
     u)
         # unmount
@@ -92,7 +109,8 @@ while true; do
             echo "Unmounting $onedir..."
             ratarmount -u "$onedir"
         done
-        exit 0
+        list_archives "$SOURCE_ARCHIVES"
+        list_mounts "$MOUNT_DESTINATION" "$SKIPKEYWORD"
         ;;
     q)
         exit 0
