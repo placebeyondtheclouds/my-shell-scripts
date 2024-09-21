@@ -57,6 +57,6 @@ Inspired by a line from Heath Adams course on privesc
 
   - `for onetgz in *.tgz; do echo "转换ing $onetgz"; zcat $onetgz > ${onetgz%.tgz}.tar; done`
 
-  - `for onezip in *.zip; do echo "转换ing $onezip"; unzip -Z1 "$onezip" | tar -cvf "${onezip%.zip}.tar" -T - ; done`
+  - `for onezip in *.zip; do echo "转换ing $onezip"; unzip -Z1 "$onezip" | while read file; do unzip -p "$onezip" "$file" | tar -rvf "${onezip%.zip}.tar" --transform="s|^|$file|"; done; done`
 
 - creating tar archives on the fly from multipart `*.tar.gz.aa *.tar.gz.ab` etc.: [multipart-targz-to-tar.sh](multipart-targz-to-tar.sh). run it like `./multipart-targz-to-tar.sh /path/to/destination`
