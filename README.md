@@ -67,3 +67,96 @@ Inspired by a line from Heath Adams course on privesc
 
 - install (ratarmount)[https://github.com/mxmlnkn/ratarmount] `conda install -c conda-forge ratarmount` or `pip install ratarmount`
 - use mount-tars.sh`: `./mount-tars.sh /path/to/tars path/to/mountpoint`
+
+## file checksums
+
+### method 1:
+
+relative paths, current directory with it's subdirectories, overwrites existing checksum file
+
+- on a MacOS:
+
+  - create:
+
+    ```
+    find . -type f -exec md5 -r {} \; > checksums.md5
+    ```
+
+  - verify:
+
+    ```
+    while read -r checksum file; do
+        calculated_checksum=$(md5 -r "$file" | awk '{print $1}')
+        if [[ $checksum != $calculated_checksum ]]; then
+            echo "Checksum verification failed for $file"
+        fi
+    done < checksums.md5
+    ```
+
+- on Linux:
+
+  - create:
+
+    ```
+    find . -type f -exec md5sum {} \; > checksums.md5
+    ```
+
+  - verify:
+
+    ```
+    while read -r checksum file; do
+        calculated_checksum=$(md5sum "$file" | awk '{print $1}')
+        if [[ $checksum != $calculated_checksum ]]; then
+            echo "Checksum verification failed for $file"
+        fi
+    done < checksums.md5
+    ```
+
+### method 2:
+
+relative paths, current directory only
+
+- on Linux:
+
+  - create:
+
+    ```
+    md5sum * > checklist.chk
+    ```
+
+  - verify:
+
+    ```
+    md5sum -c checklist.chk
+    ```
+
+### method 3:
+
+relative paths, current directory with it's subdirectories, one checksum file per directory, doesn't overwrite existing checksum files, displays progress. https://askubuntu.com/questions/318530/generate-md5-checksum-for-all-files-in-a-directory
+
+- on Linux:
+
+  - create:
+
+    ```
+    find "$PWD" -type d | sort | while read dir; do cd "${dir}"; [ ! -f @md5Sum.md5 ] && echo "Processing " "${dir}" || echo "Skipped " "${dir}" " @md5Sum.md5 already present" ; [ ! -f @md5Sum.md5 ] &&  md5sum * > @md5Sum.md5 ; chmod a=r "${dir}"/@md5Sum.md5 ;done
+    ```
+
+  - verify:
+
+    ```
+    find "$PWD" -name @md5Sum.md5 | sort | while read file; do cd "${file%/*}"; md5sum -c @md5Sum.md5; done > checklog.txt
+    ```
+
+### analyze the checksum check log
+
+```
+import pandas as pd
+
+log_file_name = "checklog.txt"
+df = pd.read_csv(log_file_name, sep=":", header=None, names=["file", "result"])
+df_bad = df[~df["result"].str.contains("OK")]
+print("total:", len(df))
+print("bad:", len(df_bad))
+df_bad.tail(10)
+```
