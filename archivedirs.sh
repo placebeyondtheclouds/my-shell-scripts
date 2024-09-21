@@ -7,6 +7,18 @@ controlc() {
 ARCHIVE_DESTINATION=${1:-.}
 SKIPKEYWORD=".ipynb_checkpoints"
 
+# check destination
+if [ ! -d "$ARCHIVE_DESTINATION" ]; then
+    read -p "Destination $ARCHIVE_DESTINATION does not exist. Create it? [y/n] " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        mkdir -p "$ARCHIVE_DESTINATION"
+    else
+        echo "Exiting..."
+        exit 1
+    fi
+fi
+
 # archive
 declare -a alldirs
 IFS=$'\n'
@@ -21,6 +33,9 @@ read -p "Press enter to continue"
 for onedir in "${alldirs[@]}"; do
     trap controlc SIGINT
     echo "Archiving $onedir..."
+    if [ -f "$ARCHIVE_DESTINATION/$onedir.tar" ]; then
+        rm -f "$ARCHIVE_DESTINATION/$onedir.tar"
+    fi
     onedir=$(basename "$onedir")
     tar -cf "$ARCHIVE_DESTINATION/$onedir.tar" "$onedir"
 
