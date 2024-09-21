@@ -43,8 +43,20 @@ Inspired by a line from Heath Adams course on privesc
 
 [ollamaparallel.sh](ollamaparallel.sh)
 
-## Archive directories of a current directory into tar.gz files
+## working with tar archives
 
-If run with a parameter of a path, the script will save the archives to the path. Otherwise, the archives will be saved to the current directory. Uncomment needed parts of the code.
-`./archivedirs.sh /path/to/save` without the trailing slash.
-[archivedirs.sh](archivedirs.sh)
+- Archive directories of a current directory into tar.gz files. If run with a parameter of a path, the script will save the archives to the path. Otherwise, the archives will be saved to the current directory. Uncomment needed parts of the code. `./archivedirs.sh /path/to/save` without the trailing slash. [archivedirs.sh](archivedirs.sh)
+
+- strip the gzip compression from from tar.gz
+
+  - `zcat cv-corpus-15.0-2023-09-08-ca.tar.gz > cv-corpus-15.0-2023-09-08-ca.tar`
+
+- likewise, creating tar archives from multiple tar.gz, tgz, and zip files
+
+  - `for onetgz in *.tar.gz; do echo "转换ing $onetgz"; zcat $onetgz > ${onetgz%.gz}; done`
+
+  - `for onetgz in *.tgz; do echo "转换ing $onetgz"; zcat $onetgz > ${onetgz%.tgz}.tar; done`
+
+  - `for onezip in *.zip; do echo "转换ing $onezip"; unzip -Z1 "$onezip" | tar -cvf "${onezip%.zip}.tar" -T - ; done`
+
+- creating tar archives from multipart `*.tar.gz.aa *.tar.gz.ab`: [multipart-targz-to-tar.sh](multipart-targz-to-tar.sh).run it like `./multipart-targz-to-tar.sh /path/to/destination`
