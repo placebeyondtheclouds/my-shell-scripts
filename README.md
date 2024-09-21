@@ -51,13 +51,19 @@ Inspired by a line from Heath Adams course on privesc
 
   - `zcat cv-corpus-15.0-2023-09-08-ca.tar.gz > cv-corpus-15.0-2023-09-08-ca.tar`
 
-- likewise, creating tar archives from multiple tar.gz, tgz, and zip files on the fly
+- likewise, creating tar archives from multiple tar.gz, tgz, and other archive files on the fly
 
   - `for onetgz in *.tar.gz; do echo "转换ing $onetgz"; zcat $onetgz > ${onetgz%.gz}; done`
 
   - `for onetgz in *.tgz; do echo "转换ing $onetgz"; zcat $onetgz > ${onetgz%.tgz}.tar; done`
 
+  - for other archive formats (repacktotar.sh)[repacktotar.sh]
+
 - creating tar archives on the fly from multipart `*.tar.gz.aa *.tar.gz.ab` etc.: [multipart-targz-to-tar.sh](multipart-targz-to-tar.sh). run it like `./multipart-targz-to-tar.sh /path/to/destination`
 
-- test tar
-      - `tar -tf file.tar && echo "tar is good"`
+- test tar - `tar -tf file.tar && echo "tar is good"`
+
+## mounting tar archives as directories
+
+- install (ratarmount)[https://github.com/mxmlnkn/ratarmount] `conda install -c conda-forge ratarmount` or `pip install ratarmount`
+- use mount-tars.sh`: `./mount-tars.sh /path/to/tars path/to/mountpoint`
