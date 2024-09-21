@@ -20,6 +20,12 @@ $prefix chown $USER:$USER $RAMDISK -R
 for archive in $(find . -type f \( -name "*.7z" -o -name "*.rar" -o -name "*.zip" \) 2>/dev/null | sort -n); do
     trap controlc SIGINT
     echo "Processing $archive"
+    echo "testing"
+    7z t "$archive"
+    if [ ! $? -eq 0 ]; then
+        echo "original $archive is damaged, status: $?"
+        exit 1
+    fi
     tarfile="${archive%.*}.tar"
     if [ -f "$tarfile" ]; then
         rm -f "$tarfile"
@@ -37,7 +43,7 @@ for archive in $(find . -type f \( -name "*.7z" -o -name "*.rar" -o -name "*.zip
         else
             tar --append --file="$tarfile" --transform="s|^|$filenameinarchive|" -C "$RAMDISK" "$filenameinarchive"
         fi
-        $prefix rm -rf "$RAMDISK/*"
+        $prefix rm -rf "$RAMDISK/$filenameinarchive"
 
     done
 done
