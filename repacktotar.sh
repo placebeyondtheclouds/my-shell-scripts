@@ -18,43 +18,59 @@ if [ "$EUID" != 0 ]; then
     prefix="sudo"
 fi
 
+declare -a filelist
+declare -a archivefiles
+IFS=$'\n'
+
 $prefix mkdir -p $RAMDISK
 $prefix mount -t tmpfs -o size=512M tmpfs $RAMDISK
 $prefix chown $USER:$USER $RAMDISK -R
 
-for archive in $(find . -type f \( -name "*.7z" -o -name "*.rar" -o -name "*.zip" \) 2>/dev/null | sort -n); do
+for line in $(find . -type f \( -name "*.7z" -o -name "*.rar" -o -name "*.zip" \) 2>/dev/null | sort -n); do
+    archivefiles+=("$line")
+done
+
+for ((archno = 0; archno < ${#archivefiles[@]}; archno++)); do
     trap controlc SIGINT
-    echo -e "\nProcessing $archive"
-    echo -n "testing $archive..."
-    7z t "$archive" &>/dev/null
+
+    archivefile="${archivefiles[$archno]}"
+    echo -e "\nProcessing $archivefile"
+    echo -n "testing $archivefile..."
+    7z t "$archivefile" &>/dev/null
     if [ ! $? -eq 0 ]; then
-        echo "original $archive is damaged, status: $?"
+        echo "original ${archivefiles[$archno]} is damaged, status: $?"
         exit 1
     fi
     echo "OK"
-    tarfile="${archive%.*}.tar"
+    tarfile="${archivefile%.*}.tar"
     if [ -f "$tarfile" ]; then
         rm -f "$tarfile"
     fi
-    filelist=$(7z l -ba "$archive" | grep -vF 'D....' | grep -oP '(?<=^.{53}).*')
-    if [ -z "$filelist" ]; then
+
+    filelist=()
+    for line in $(7z l -ba "$archivefile" | grep -vF 'D....' | grep -oP '(?<=^.{53}).*'); do
+        filelist+=("$line")
+    done
+    if [ -z "${#filelist[@]}" ]; then
         continue
     fi
-    for filenameinarchive in $filelist; do
-        trap controlc SIGINT
-        echo -n "."
-        mkdir -p "$RAMDISK/$(dirname "$filenameinarchive")"
-        7z x -so "$archive" "$filenameinarchive" >"$RAMDISK/$filenameinarchive"
 
+    for ((fileno = 0; fileno < ${#filelist[@]}; fileno++)); do
+        trap controlc SIGINT
+        onefile="${filelist[$fileno]}"
+        basename="${onefile##*/}"
+        echo -n "."
+        mkdir -p "$RAMDISK/${basename}"
+        #7z x -so "${archivefiles[$i]}" "$filenameinarchive" >"$RAMDISK/$filenameinarchive"
+        7z x "$archivefile" -o"$RAMDISK" "$onefile" &>/dev/null
         if [ ! -f "$tarfile" ]; then
-            #tar --create --file="$tarfile" --transform="s|^|$filenameinarchive|" -C "$RAMDISK" "$filenameinarchive"
-            bsdtar --create --file="$tarfile" -C "$RAMDISK" "$filenameinarchive"
+            tar --create --file="$tarfile" -C "$RAMDISK" "$onefile"
         else
-            #tar --append --file="$tarfile" --transform="s|^|$filenameinarchive|" -C "$RAMDISK" "$filenameinarchive"
-            bsdtar --append --file="$tarfile" -C "$RAMDISK" "$filenameinarchive"
+            tar --append --file="$tarfile" -C "$RAMDISK" "$onefile"
         fi
-        $prefix rm -rf "$RAMDISK/$filenameinarchive"
+        $prefix rm -rf "$RAMDISK/$onefile"
     done
+
     echo -ne "\ntesting $tarfile..."
     tar -tf "$tarfile" &>/dev/null
     if [ ! $? -eq 0 ]; then
