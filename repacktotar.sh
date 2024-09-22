@@ -72,8 +72,7 @@ for ((archno = 0; archno < ${#archivefiles[@]}; archno++)); do
     done
 
     echo -ne "\ntesting $tarfile..."
-    tar -tf "$tarfile" &>/dev/null
-    if [ ! $? -eq 0 ]; then
+    if ! tar -tf "$tarfile" &>/dev/null; then
         echo "created $tarfile is damaged, status: $?"
         exit 1
     fi
