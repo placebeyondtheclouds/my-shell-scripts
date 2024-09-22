@@ -1,8 +1,7 @@
 #!/bin/bash
 
-#sudo apt install p7zip-full
+#sudo apt install p7zip-full p7zip-rar libarchive-tools
 
-#sudo apt install libarchive-tools
 # GNU tar takes longer because it is scanning the entire original archive before appending.
 # The bsdtar command from libarchive just immediately appends the new data.
 # https://superuser.com/questions/1456587/why-does-each-subsequent-append-to-a-tar-archive-take-longer
@@ -58,17 +57,18 @@ for ((archno = 0; archno < ${#archivefiles[@]}; archno++)); do
     for ((fileno = 0; fileno < ${#filelist[@]}; fileno++)); do
         trap controlc SIGINT
         onefile="${filelist[$fileno]}"
-        basename="${onefile##*/}"
+        # filename="${onefile##*/}"
+        basename="$(dirname $onefile)"
         echo -n "."
         mkdir -p "$RAMDISK/${basename}"
-        #7z x -so "${archivefiles[$i]}" "$filenameinarchive" >"$RAMDISK/$filenameinarchive"
+        #7z x -so "$archivefile" "$onefile" >"$RAMDISK/$onefile"
         7z x "$archivefile" -o"$RAMDISK" "$onefile" &>/dev/null
         if [ ! -f "$tarfile" ]; then
             tar --create --file="$tarfile" -C "$RAMDISK" "$onefile"
         else
             tar --append --file="$tarfile" -C "$RAMDISK" "$onefile"
         fi
-        $prefix rm -rf "$RAMDISK/$onefile"
+        $prefix rm "$RAMDISK/$onefile"
     done
 
     echo -ne "\ntesting $tarfile..."
