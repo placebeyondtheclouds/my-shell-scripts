@@ -24,7 +24,7 @@ $prefix chown $USER:$USER $RAMDISK -R
 
 for archive in $(find . -type f \( -name "*.7z" -o -name "*.rar" -o -name "*.zip" \) 2>/dev/null | sort -n); do
     trap controlc SIGINT
-    echo -n "\nProcessing $archive"
+    echo -e "\nProcessing $archive"
     echo -n "testing $archive..."
     7z t "$archive" &>/dev/null
     if [ ! $? -eq 0 ]; then
