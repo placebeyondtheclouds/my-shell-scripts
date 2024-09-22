@@ -46,6 +46,11 @@ for archive in $(find . -type f \( -name "*.7z" -o -name "*.rar" -o -name "*.zip
         $prefix rm -rf "$RAMDISK/$filenameinarchive"
 
     done
+    7z t "$tarfile"
+    if [ ! $? -eq 0 ]; then
+        echo "created $tarfile is damaged, status: $?"
+        exit 1
+    fi
 done
 
 $prefix umount $RAMDISK
