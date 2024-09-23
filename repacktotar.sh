@@ -10,20 +10,8 @@ controlc() {
     exit 1
 }
 
-RAMDISK="/mnt/ramdisk"
-
-prefix=""
-if [ "$EUID" != 0 ]; then
-    prefix="sudo"
-fi
-
-declare -a filelist
 declare -a archivefiles
 IFS=$'\n'
-
-$prefix mkdir -p $RAMDISK
-$prefix mount -t tmpfs -o size=512M tmpfs $RAMDISK
-$prefix chown $USER:$USER $RAMDISK -R
 
 for line in $(find . -type f \( -name "*.7z" -o -name "*.rar" -o -name "*.zip" \) 2>/dev/null | sort -n); do
     archivefiles+=("$line")
@@ -46,30 +34,23 @@ for ((archno = 0; archno < ${#archivefiles[@]}; archno++)); do
         rm -f "$tarfile"
     fi
 
-    filelist=()
-    for line in $(7z l -ba "$archivefile" | grep -vF 'D....' | grep -oP '(?<=^.{53}).*'); do
-        filelist+=("$line")
-    done
-    if [ -z "${#filelist[@]}" ]; then
-        continue
+    # extract to a temp directory
+    mkdir -p ./temp
+    tempdir="./temp"
+    echo "extracting $archivefile to $tempdir"
+    7z x "$archivefile" -o"$tempdir" &>/dev/null
+    if [ ! $? -eq 0 ]; then
+        echo "failed to extract $archivefile, status: $?"
+        exit 1
     fi
 
-    for ((fileno = 0; fileno < ${#filelist[@]}; fileno++)); do
-        trap controlc SIGINT
-        onefile="${filelist[$fileno]}"
-        # filename="${onefile##*/}"
-        basename="$(dirname $onefile)"
-        echo -n "."
-        mkdir -p "$RAMDISK/${basename}"
-        #7z x -so "$archivefile" "$onefile" >"$RAMDISK/$onefile"
-        7z x "$archivefile" -o"$RAMDISK" "$onefile" &>/dev/null
-        if [ ! -f "$tarfile" ]; then
-            tar --create --file="$tarfile" -C "$RAMDISK" "$onefile"
-        else
-            tar --append --file="$tarfile" -C "$RAMDISK" "$onefile"
-        fi
-        $prefix rm "$RAMDISK/$onefile"
-    done
+    # create a tar archive
+    echo "creating $tarfile"
+    tar cf "$tarfile" -C "$tempdir" .
+    if [ ! $? -eq 0 ]; then
+        echo "failed to create $tarfile, status: $?"
+        exit 1
+    fi
 
     echo -ne "\ntesting $tarfile..."
     if ! tar -tf "$tarfile" &>/dev/null; then
@@ -79,5 +60,5 @@ for ((archno = 0; archno < ${#archivefiles[@]}; archno++)); do
     echo "OK"
 done
 
-$prefix umount $RAMDISK
-#$prefix rmdir $RAMDISK
+# delete the temp directory on exit
+trap "rm -rf $tempdir" EXIT
