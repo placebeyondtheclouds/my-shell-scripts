@@ -4,6 +4,11 @@ controlc() {
     exit 1
 }
 
+if ! ratarmount -v; then
+    echo -e "\n\n\nratarmount not found. activate conda environment with ratarmount installed first or install it with \nconda install -c conda-forge ratarmount \nor\npip install ratarmount\nquitting."
+    exit 1
+fi
+
 SOURCE_ARCHIVES=$1
 MOUNT_DESTINATION=$2
 SKIPKEYWORD=".ipynb_checkpoints"
