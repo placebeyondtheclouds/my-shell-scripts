@@ -38,7 +38,7 @@ for ((archno = 0; archno < ${#archivefiles[@]}; archno++)); do
     mkdir -p ./temp
     tempdir="./temp"
     echo "extracting $archivefile to $tempdir"
-    7z x "$archivefile" -o"$tempdir" &>/dev/null
+    7z x "$archivefile" -o"$tempdir"
     if [ ! $? -eq 0 ]; then
         echo "failed to extract $archivefile, status: $?"
         exit 1
