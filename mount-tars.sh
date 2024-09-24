@@ -48,6 +48,7 @@ fi
 
 list_archives() {
     local SOURCE_ARCHIVES=$1
+    #this is a dictionary hahaha, associative array
     declare -A archivefiles_map
     IFS=$'\n'
     for line in $(find "$SOURCE_ARCHIVES" -type f \( -name "*.tar" -o -name "*.zip" -o -name "*.rar" -o -name "*.tar.gz" \) 2>/dev/null | sort -n); do
