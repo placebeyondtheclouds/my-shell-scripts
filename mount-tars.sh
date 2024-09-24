@@ -50,7 +50,7 @@ list_archives() {
     local SOURCE_ARCHIVES=$1
     declare -A archivefiles_map
     IFS=$'\n'
-    for line in $(find "$SOURCE_ARCHIVES" -type f \( -name "*.tar" -o -name "*.zip" -o -name "*.tar.gz" \) 2>/dev/null | sort -n); do
+    for line in $(find "$SOURCE_ARCHIVES" -type f \( -name "*.tar" -o -name "*.zip" -o -name "*.rar" -o -name "*.tar.gz" \) 2>/dev/null | sort -n); do
         if [[ "$line" == *.tar.gz ]]; then
             base_name="${line%.tar.gz}"
         else
@@ -67,11 +67,11 @@ list_archives() {
     archivefiles=("${archivefiles_map[@]}")
 
     cat <<"EOF"
- _____  _    ___        __                      _  _ 
-|_   _|/_\  | _ \ ___  / _| ___  _  _  _ _   __| |(_)
-  | | / _ \ |   /(_-< |  _|/ _ \| || || ' \ / _` | _ 
-  |_|/_/ \_\|_|_\/__/ |_|  \___/ \_,_||_||_|\__,_|(_)
-                                                                                
+   _    ___   ___  _  _  ___ __   __ ___  ___     __                      _  _ 
+  /_\  | _ \ / __|| || ||_ _|\ \ / /| __|/ __|   / _| ___  _  _  _ _   __| |(_)
+ / _ \ |   /| (__ | __ | | |  \ V / | _| \__ \  |  _|/ _ \| || || ' \ / _` | _ 
+/_/ \_\|_|_\ \___||_||_||___|  \_/  |___||___/  |_|  \___/ \_,_||_||_|\__,_|(_)
+                                                                                                                                                          
 EOF
     echo "archive count: ${#archivefiles[@]}"
     echo "${archivefiles[@]}"
