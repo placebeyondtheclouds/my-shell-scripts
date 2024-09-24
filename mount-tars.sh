@@ -51,12 +51,20 @@ list_archives() {
     #this is a dictionary hahaha, associative array
     declare -A archivefiles_map
     IFS=$'\n'
-    for line in $(find "$SOURCE_ARCHIVES" -type f \( -name "*.tar" -o -name "*.zip" -o -name "*.rar" -o -name "*.tar.gz" \) 2>/dev/null | sort -n); do
-        if [[ "$line" == *.tar.gz ]]; then
+
+    mapfile -t files < <(find "$SOURCE_ARCHIVES" -type f \( -name "*.tar" -o -name "*.zip" -o -name "*.rar" -o -name "*.tar.gz" \) 2>/dev/null | sort -n)
+    for line in "${files[@]}"; do
+        case "$line" in
+        *.tar.gz)
             base_name="${line%.tar.gz}"
-        else
+            ;;
+        *.tar)
+            base_name="${line%.tar}"
+            ;;
+        *)
             base_name="${line%.*}"
-        fi
+            ;;
+        esac
         if [[ "$line" == *.tar ]]; then
             archivefiles_map["$base_name"]="$line"
         else
