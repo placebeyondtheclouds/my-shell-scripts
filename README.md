@@ -160,3 +160,7 @@ print("total:", len(df))
 print("bad:", len(df_bad))
 df_bad.tail(10)
 ```
+
+## extract all zip archives in the current directory to their own directories
+
+- `for file in *.zip; do unzip -d "${file%.*}" "$file"; done`
