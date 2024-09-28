@@ -30,7 +30,7 @@ EOF
 #checks
 if [ -z "$SOURCE_ARCHIVES" ] || [ -z "$MOUNT_DESTINATION" ]; then
     echo "Usage: $0 <SOURCE_ARCHIVES> <MOUNT_DESTINATION>"
-    echo "Universal example: $0 /mnt/sams2T_crypt_vg_data/datasets ./source_datasets"
+    echo "Universal example: $0 /mnt/sams2T_crypt_vg_data/datasets ./source_datasets [--recursive]"
     exit 1
 fi
 if [ ! -d "$MOUNT_DESTINATION" ]; then
@@ -136,7 +136,11 @@ EOF
             if [ -e "$destination" ]; then
                 echo "Skipping ${basename}, its already mounted in $destination"
             else
-                ratarmount "${archivefiles[$i]}" "$destination"
+                if [ "$3" == "--recursive" ]; then
+                    ratarmount --recursive "${archivefiles[$i]}" "$destination"
+                else
+                    ratarmount "${archivefiles[$i]}" "$destination"
+                fi
             fi
         done
         list_archives "$SOURCE_ARCHIVES"
