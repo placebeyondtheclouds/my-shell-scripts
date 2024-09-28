@@ -83,7 +83,9 @@ list_archives() {
                                                                                                                                                           
 EOF
     echo "archive count: ${#archivefiles[@]}"
-    echo "${archivefiles[@]}"
+    for file in "${archivefiles[@]}"; do
+        echo "$file"
+    done
 }
 
 list_mounts() {
@@ -103,7 +105,9 @@ list_mounts() {
                                                                         
 EOF
     echo "mount points to unmount: ${#alldirs[@]}"
-    echo "${alldirs[@]}"
+    for dir in "${alldirs[@]}"; do
+        echo "$dir"
+    done
 }
 
 list_archives "$SOURCE_ARCHIVES"
@@ -135,6 +139,7 @@ EOF
 
             if [ -e "$destination" ]; then
                 echo "Skipping ${basename}, its already mounted in $destination"
+                read -n 1 -s -r -p "Press any key to continue"
             else
                 if [ "$3" == "--recursive" ]; then
                     ratarmount --recursive "${archivefiles[$i]}" "$destination"
