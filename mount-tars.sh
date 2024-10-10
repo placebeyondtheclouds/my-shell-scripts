@@ -162,6 +162,11 @@ EOF
             trap controlc SIGINT
             echo "Unmounting $onedir..."
             ratarmount -u "$onedir"
+            if [[ -d "$onedir" ]]; then
+                if [[ -z "$(ls -A "$onedir")" ]]; then
+                    rm -rf "$onedir"
+                fi
+            fi
         done
         list_archives "$SOURCE_ARCHIVES"
         list_mounts "$MOUNT_DESTINATION" "$SKIPKEYWORD"
