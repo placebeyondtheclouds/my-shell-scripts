@@ -4,6 +4,7 @@ controlc() {
     exit 1
 }
 
+echo "Test if ratarmount is installed..."
 if ! ratarmount -v; then
     echo -e "\n\n\nratarmount not found. activate conda environment with ratarmount installed first or install it with \nconda install -c conda-forge ratarmount \nor\npip install ratarmount\nquitting."
     exit 1
@@ -31,6 +32,7 @@ EOF
 if [ -z "$SOURCE_ARCHIVES" ] || [ -z "$MOUNT_DESTINATION" ]; then
     echo "Usage: $0 <SOURCE_ARCHIVES> <MOUNT_DESTINATION>"
     echo "Universal example: $0 /mnt/sams2T_crypt_vg_data/datasets ./source_datasets [--recursive]"
+    echo "Quitting."
     exit 1
 fi
 if [ ! -d "$MOUNT_DESTINATION" ]; then
@@ -65,6 +67,9 @@ list_archives() {
             base_name="${line%.*}"
             ;;
         esac
+        if [ -d "$base_name" ]; then
+            continue
+        fi
         if [[ "$line" == *.tar ]]; then
             archivefiles_map["$base_name"]="$line"
         else
