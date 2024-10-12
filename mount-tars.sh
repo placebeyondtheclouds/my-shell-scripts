@@ -105,15 +105,6 @@ list_mounts() {
     # remove first element
     alldirs=("${alldirs[@]:1}")
 
-    # remove empty dir and the item from array
-    for onedir in "${alldirs[@]}"; do
-        if [[ -d "$onedir" ]]; then
-            if [[ -z "$(ls -A "$onedir")" ]]; then
-                rm -rf "$onedir"
-                alldirs=("${alldirs[@]/$onedir/}")
-            fi
-        fi
-    done
     cat <<"EOF"
                         _          __                      _  _ 
  _ __   ___  _  _  _ _ | |_  ___  / _| ___  _  _  _ _   __| |(_)
@@ -121,7 +112,7 @@ list_mounts() {
 |_|_|_|\___/ \_,_||_||_|\__|/__/ |_|  \___/ \_,_||_||_|\__,_|(_)
                                                                         
 EOF
-    echo "mount points to unmount (or empty dirs deleted): ${#alldirs[@]}"
+    echo "mount points to unmount: ${#alldirs[@]}"
     for dir in "${alldirs[@]}"; do
         echo "$dir"
     done

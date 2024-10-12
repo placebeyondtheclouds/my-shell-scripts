@@ -164,3 +164,7 @@ df_bad.tail(10)
 ## extract all zip archives in the current directory to their own directories
 
 - `for file in *.zip; do unzip -d "${file%.*}" "$file"; done`
+
+## extract all tar.gz archives in the current directory
+
+- `for file in *.tar.gz; do echo "Extracting $file"; tar -xzf "$file"; done`
