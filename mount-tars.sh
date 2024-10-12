@@ -31,7 +31,7 @@ EOF
 #checks
 if [ -z "$SOURCE_ARCHIVES" ] || [ -z "$MOUNT_DESTINATION" ]; then
     echo "Usage: $0 <SOURCE_ARCHIVES> <MOUNT_DESTINATION>"
-    echo "Universal example: $0 /mnt/sams2T_crypt_vg_data/datasets ./source_datasets [--recursive]"
+    echo "Universal example: $0 /mnt/sams2T_crypt_vg_data/datasets ./source_datasets [--recursive] [--mount | --unmount]"
     echo "Quitting."
     exit 1
 fi
@@ -48,13 +48,31 @@ if [ ! -d "$SOURCE_ARCHIVES" ]; then
     exit 1
 fi
 
+# find recursive, mount, unmount in following arguments and set the respective flags
+for arg in "$@"; do
+    case $arg in
+    --recursive)
+        RECURSIVE="true"
+        ;;
+    --mount)
+        MOUNT="true"
+        ;;
+    --unmount)
+        UNMOUNT="true"
+        ;;
+    esac
+done
+
 list_archives() {
-    local SOURCE_ARCHIVES=$1
     #this is a dictionary hahaha, associative array
     declare -A archivefiles_map
     IFS=$'\n'
 
-    mapfile -t files < <(find "$SOURCE_ARCHIVES" -type f \( -name "*.tar" -o -name "*.zip" -o -name "*.rar" -o -name "*.tar.gz" \) 2>/dev/null | sort -n)
+    # mapfile -d '' -t files < <(find "$SOURCE_ARCHIVES" -type f \( -name "*.tar" -o -name "*.zip" -o -name "*.rar" -o -name "*.tar.gz" \) 2>/dev/null | sort -n)
+    files=()
+    while IFS= read -r -d '' file; do
+        files+=("$file")
+    done < <(find "$SOURCE_ARCHIVES" -type f \( -name "*.tar" -o -name "*.zip" -o -name "*.rar" -o -name "*.tar.gz" \) -print0 2>/dev/null | sort -zn)
     for line in "${files[@]}"; do
         case "$line" in
         *.tar.gz)
@@ -67,13 +85,10 @@ list_archives() {
             base_name="${line%.*}"
             ;;
         esac
-        if [ -d "$base_name" ]; then
-            continue
-        fi
         if [[ "$line" == *.tar ]]; then
             archivefiles_map["$base_name"]="$line"
         else
-            if [[ -z "${archivefiles_map[$base_name]}" ]]; then
+            if [[ -z "${archivefiles_map["$base_name"]}" ]]; then
                 archivefiles_map["$base_name"]="$line"
             fi
         fi
@@ -94,8 +109,6 @@ EOF
 }
 
 list_mounts() {
-    local MOUNT_DESTINATION=$1
-    local SKIPKEYWORD=$2
     alldirs=()
     IFS=$'\n'
     for line in $(find "$MOUNT_DESTINATION" -maxdepth 1 -type d 2>/dev/null | grep -v "$SKIPKEYWORD" | grep -v "^\.$" | grep -v "^\.\.$" | sort -n); do
@@ -105,6 +118,15 @@ list_mounts() {
     # remove first element
     alldirs=("${alldirs[@]:1}")
 
+    # remove empty dir and the item from array
+    for onedir in "${alldirs[@]}"; do
+        if [[ -d "$onedir" ]]; then
+            if [[ -z "$(ls -A "$onedir")" ]]; then
+                rm -rf "$onedir"
+                alldirs=("${alldirs[@]/$onedir/}")
+            fi
+        fi
+    done
     cat <<"EOF"
                         _          __                      _  _ 
  _ __   ___  _  _  _ _ | |_  ___  / _| ___  _  _  _ _   __| |(_)
@@ -112,17 +134,62 @@ list_mounts() {
 |_|_|_|\___/ \_,_||_||_|\__|/__/ |_|  \___/ \_,_||_||_|\__,_|(_)
                                                                         
 EOF
-    echo "mount points to unmount: ${#alldirs[@]}"
+    echo "mount points to unmount (or empty dirs deleted): ${#alldirs[@]}"
     for dir in "${alldirs[@]}"; do
         echo "$dir"
     done
 }
 
-list_archives "$SOURCE_ARCHIVES"
-list_mounts "$MOUNT_DESTINATION" "$SKIPKEYWORD"
+mount() {
+    for ((i = 0; i < ${#archivefiles[@]}; i++)); do
+        trap controlc SIGINT
+        basename="${archivefiles[$i]##*/}"
+        destination="$MOUNT_DESTINATION/${basename}"
 
-while true; do
-    cat <<"EOF"
+        if [ -e "$destination" ]; then
+            echo "Skipping ${basename}, its already mounted in $destination"
+            read -n 1 -s -r -p "Press any key to continue"
+        else
+            if [ "$RECURSIVE" = "true" ]; then
+                ratarmount --recursive "${archivefiles[$i]}" "$destination"
+            else
+                ratarmount "${archivefiles[$i]}" "$destination"
+            fi
+        fi
+    done
+}
+
+unmount() {
+    for onedir in "${alldirs[@]}"; do
+        trap controlc SIGINT
+        echo "Unmounting $onedir..."
+        ratarmount -u "$onedir"
+        if [[ -d "$onedir" ]]; then
+            if [[ -z "$(ls -A "$onedir")" ]]; then
+                rm -rf "$onedir"
+            fi
+        fi
+    done
+}
+
+list_archives
+list_mounts
+
+if [ "$MOUNT" = "true" ]; then
+    mount
+    list_archives
+    list_mounts
+    exit 0
+fi
+
+if [ "$UNMOUNT" = "true" ]; then
+    unmount
+    list_archives
+    list_mounts
+    exit 0
+fi
+
+cat <<"EOF"
     
             Oo               Oo             
            o  O             o  O            
@@ -135,47 +202,23 @@ ooooooooo                         ooooooooo
                  ooooooooo                  
                                                                                                                  
 EOF
-    echo "press [m] to mount, [u] to unmount, [q] to quit"
-    read -n 1 -s -r -p "" key
+echo "press [m] to mount, [u] to unmount, [q] to quit"
+read -n 1 -s -r -p "" key
 
-    case $key in
-    m)
-        # mount
-        for ((i = 0; i < ${#archivefiles[@]}; i++)); do
-            basename="${archivefiles[$i]##*/}"
-            destination="$MOUNT_DESTINATION/${basename}"
-
-            if [ -e "$destination" ]; then
-                echo "Skipping ${basename}, its already mounted in $destination"
-                read -n 1 -s -r -p "Press any key to continue"
-            else
-                if [ "$3" == "--recursive" ]; then
-                    ratarmount --recursive "${archivefiles[$i]}" "$destination"
-                else
-                    ratarmount "${archivefiles[$i]}" "$destination"
-                fi
-            fi
-        done
-        list_archives "$SOURCE_ARCHIVES"
-        list_mounts "$MOUNT_DESTINATION" "$SKIPKEYWORD"
-        ;;
-    u)
-        # unmount
-        for onedir in "${alldirs[@]}"; do
-            trap controlc SIGINT
-            echo "Unmounting $onedir..."
-            ratarmount -u "$onedir"
-            if [[ -d "$onedir" ]]; then
-                if [[ -z "$(ls -A "$onedir")" ]]; then
-                    rm -rf "$onedir"
-                fi
-            fi
-        done
-        list_archives "$SOURCE_ARCHIVES"
-        list_mounts "$MOUNT_DESTINATION" "$SKIPKEYWORD"
-        ;;
-    q)
-        exit 0
-        ;;
-    esac
-done
+case $key in
+m)
+    # mount
+    mount
+    list_archives
+    list_mounts
+    ;;
+u)
+    # unmount
+    unmount
+    list_archives
+    list_mounts
+    ;;
+q)
+    exit 0
+    ;;
+esac
