@@ -31,7 +31,7 @@ EOF
 #checks
 if [ -z "$SOURCE_ARCHIVES" ] || [ -z "$MOUNT_DESTINATION" ]; then
     echo "Usage: $0 <SOURCE_ARCHIVES> <MOUNT_DESTINATION>"
-    echo "Universal example: $0 /mnt/sams2T_crypt_vg_data/datasets ./source_datasets [--recursive] [--mount | --unmount]"
+    echo "Universal example: $0 /mnt/sams2T_crypt_vg_data/datasets ./source_datasets [--mount | --unmount]"
     echo "Quitting."
     exit 1
 fi
@@ -48,12 +48,9 @@ if [ ! -d "$SOURCE_ARCHIVES" ]; then
     exit 1
 fi
 
-# find recursive, mount, unmount in following arguments and set the respective flags
+# find mount, unmount in following arguments and set the respective flags
 for arg in "$@"; do
     case $arg in
-    --recursive)
-        RECURSIVE="true"
-        ;;
     --mount)
         MOUNT="true"
         ;;
@@ -150,11 +147,7 @@ mount() {
             echo "Skipping ${basename}, its already mounted in $destination"
             read -n 1 -s -r -p "Press any key to continue"
         else
-            if [ "$RECURSIVE" = "true" ]; then
-                ratarmount --recursive "${archivefiles[$i]}" "$destination"
-            else
-                ratarmount "${archivefiles[$i]}" "$destination"
-            fi
+            ratarmount "${archivefiles[$i]}" "$destination"
         fi
     done
 }
