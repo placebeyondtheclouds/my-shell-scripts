@@ -3,23 +3,21 @@
 # chmod u+x ollamaparallel.sh
 # run with: CUDA_VISIBLE_DEVICES=0,1 ./ollamaparallel.sh
 
+#start at
 PORT=11435
 
 # get the number of GPUs from CUDA_VISIBLE_DEVICES
 if [ -z "$CUDA_VISIBLE_DEVICES" ]; then
     echo "CUDA_VISIBLE_DEVICES is not set. Using all GPUs."
-else
-    GPUS=("${CUDA_VISIBLE_DEVICES//,/ }")
-fi
-
-if [ ${#GPUS[@]} -eq 0 ]; then
     GPUS=($(seq 0 $(($(nvidia-smi --query-gpu=count --format=csv,noheader) - 1))))
+else
+    GPUS=($(echo $CUDA_VISIBLE_DEVICES | tr ',' ' '))
 fi
 
-ss -ntlp | grep -w "ollama" | awk '{print $4}' | awk -F: '{print $2}' | tee >ALREADYRUNNING
-if [ -s ALREADYRUNNING ]; then
+ss -ntlp | grep -w "ollama" | awk '{print $4}' | awk -F: '{print $2}' >alreadyrunning
+if [ -s alreadyrunning ]; then
     echo "ollama already running on ports:"
-    cat ALREADYRUNNING
+    cat alreadyrunning
     echo "killall ollama? [y/N]:"
     read -n 1 -s -r -p "" key
     if [ "$key" = "y" ]; then
@@ -30,6 +28,7 @@ if [ -s ALREADYRUNNING ]; then
     fi
 fi
 
+echo "using GPUs: ${GPUS[*]}"
 echo "enter the number of instances per GPU [1]:"
 read -r INSTANCES_PER_GPU
 
@@ -51,3 +50,6 @@ for current_gpu_number in "${GPUS[@]}"; do
         echo "started process $process_number on gpu $current_gpu_number on port $PORT"
     done
 done
+
+echo "ports are written to ollamaports.txt"
+echo "to kill all ollama instances, run: killall ollama"
