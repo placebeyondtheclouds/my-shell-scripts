@@ -56,7 +56,8 @@ for current_gpu_number in "${GPUS[@]}"; do
 done
 
 echo "ports are written to ollamaports.txt"
+
 echo "to kill all ollama instances, run: "
-echo "pkill ollama"
+echo -e "\033[0;31mpkill ollama\033[0m"
 echo "to see the running instances, run: "
-echo "ss -ntlp | grep -w \"ollama\""
+echo -e "\033[0;31mss -ntlp | grep -w \"ollama\"\033[0m"
