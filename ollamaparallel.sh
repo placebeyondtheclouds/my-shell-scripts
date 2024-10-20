@@ -21,7 +21,7 @@ if [ -s alreadyrunning ]; then
     echo "killall ollama? [y/N]:"
     read -n 1 -s -r -p "" key
     if [ "$key" = "y" ]; then
-        killall ollama
+        killall ollama 2>/dev/null
     else
         echo "quitting"
         exit 1
