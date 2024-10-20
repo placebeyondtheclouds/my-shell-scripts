@@ -21,7 +21,8 @@ if [ -n "$alreadyrunning" ]; then
     echo "stop ollama? [y/N]:"
     read -n 1 -s -r -p "" key
     if [ "$key" = "y" ]; then
-        pkill ollama
+        # do not kill the current running script ollamaparallel.sh
+        pkill "ollama" -x 2>/dev/null
     else
         echo "quitting"
         exit 1
@@ -51,7 +52,7 @@ for current_gpu_number in "${GPUS[@]}"; do
         done
         echo $PORT >>ollamaports.txt
         nohup /bin/bash -c "CUDA_VISIBLE_DEVICES=\"$current_gpu_number\" OLLAMA_HOST=127.0.0.1:$PORT ollama serve" >/dev/null 2>&1 &
-        echo "started process $process_number on gpu $current_gpu_number on port $PORT"
+        echo -e "\033[0;34mGPU $current_gpu_number: ollama started on port $PORT\033[0m"
     done
 done
 
