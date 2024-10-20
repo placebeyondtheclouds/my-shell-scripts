@@ -35,8 +35,11 @@ for current_gpu_number in "${GPUS[@]}"; do
     echo "GPU $current_gpu_number: $(nvidia-smi --query-gpu=name,memory.free --format=csv -i $current_gpu_number)"
 done
 
-echo "enter the number of instances per GPU [1]:"
-read -r INSTANCES_PER_GPU
+INSTANCES_PER_GPU=""
+while [[ ! $INSTANCES_PER_GPU =~ ^[0-9]+$ ]]; do
+    echo "enter the number of instances per GPU [1]:"
+    read -r INSTANCES_PER_GPU
+done
 
 if [ -z "$INSTANCES_PER_GPU" ]; then
     echo "instances per GPU not set. Using 1."
