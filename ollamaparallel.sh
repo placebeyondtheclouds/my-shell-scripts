@@ -1,6 +1,8 @@
 #!/bin/bash
 
-# run with: CUDA_VISIBLE_DEVICES=0,1 ollamaparallel
+# start multiple ollama serve instances for use with other scripts
+
+# usage: CUDA_VISIBLE_DEVICES=0,1 ollamaparallel
 
 #start at
 PORT=11435
