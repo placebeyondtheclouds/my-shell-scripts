@@ -25,6 +25,7 @@ SystemMaxUse=5000M
 
 - `find . -type f -iname "*.log" -exec grep --color=always -Hi -B 1 -A 1 "core dumped" '{}' + ;`
 - `find . -type f -name "*.log" | xargs cat | grep -e "core dumped" -C1`
+- `find . -type f -name "*.log" | xargs cat | grep -E -i -w "word1|word2|word3" -C1`
 
 ## Check archives in current directory for errors
 
