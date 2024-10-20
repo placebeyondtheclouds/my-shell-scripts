@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# chmod u+x ollamaparallel.sh
+# /usr/local/bin/ollamaparallel.sh
 # run with: CUDA_VISIBLE_DEVICES=0,1 ./ollamaparallel.sh
 
 #start at
@@ -14,14 +14,14 @@ else
     GPUS=($(echo $CUDA_VISIBLE_DEVICES | tr ',' ' '))
 fi
 
-ss -ntlp | grep -w "ollama" | awk '{print $4}' | awk -F: '{print $2}' >alreadyrunning
-if [ -s alreadyrunning ]; then
+alreadyrunning=$(ss -ntlp | grep -w "ollama" | awk '{print $4}' | awk -F: '{print $2}')
+if [ -n "$alreadyrunning" ]; then
     echo "ollama already running on ports:"
-    cat alreadyrunning
-    echo "killall ollama? [y/N]:"
+    echo "$alreadyrunning"
+    echo "stop ollama? [y/N]:"
     read -n 1 -s -r -p "" key
     if [ "$key" = "y" ]; then
-        killall ollama 2>/dev/null
+        pkill ollama
     else
         echo "quitting"
         exit 1
@@ -52,4 +52,7 @@ for current_gpu_number in "${GPUS[@]}"; do
 done
 
 echo "ports are written to ollamaports.txt"
-echo "to kill all ollama instances, run: killall ollama"
+echo "to kill all ollama instances, run: "
+echo "pkill ollama"
+echo "to see the running instances, run: "
+echo "ss -ntlp | grep -w \"ollama\""
