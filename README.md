@@ -21,6 +21,11 @@ SystemMaxUse=5000M
 
 `sudo systemctl restart systemd-journald`
 
+## Parsing logs
+
+- `find . -type f -iname "*.log" -exec grep --color=always -Hi -B 1 -A 1 "core dumped" '{}' + ;`
+- `find . -type f -name "*.log" | xargs cat | grep -e "core dumped" -C1`
+
 ## Check archives in current directory for errors
 
 Usage: `./checkarchives.sh`
@@ -168,3 +173,11 @@ df_bad.tail(10)
 ## extract all tar.gz archives in the current directory
 
 - `for file in *.tar.gz; do echo "Extracting $file"; tar -xzf "$file"; done`
+
+## extract all \*.gz archives in the current directory to a specified location
+
+- `controlc() { echo "SIGINT caught"; exit; }; trap controlc SIGINT; for file in *.gz; do echo "Extracting $file"; gunzip -c "$file" > /path/to/destination/"${file%.gz}"; done`
+
+## test all gzip archives in the current directory
+
+- `controlc() { echo "SIGINT caught"; exit; }; trap controlc SIGINT; for file in *.gz; do echo "Testing $file"; zcat "$file" > /dev/null; if [ $? -eq 0 ]; then echo "OK"; else echo "Failed"; rm "$file"; fi; done`
