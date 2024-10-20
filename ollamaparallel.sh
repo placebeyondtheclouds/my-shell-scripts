@@ -5,7 +5,7 @@
 #start at
 PORT=11435
 
-# get the number of GPUs from CUDA_VISIBLE_DEVICES
+# get the number of GPUs
 if [ -z "$CUDA_VISIBLE_DEVICES" ]; then
     echo "CUDA_VISIBLE_DEVICES is not set. Using all GPUs."
     GPU_COUNT=$(nvidia-smi --list-gpus | wc -l)
