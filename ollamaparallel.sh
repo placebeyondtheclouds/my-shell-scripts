@@ -29,6 +29,10 @@ if [ -n "$alreadyrunning" ]; then
 fi
 
 echo "using GPUs: ${GPUS[*]}"
+for current_gpu_number in "${GPUS[@]}"; do
+    echo "GPU $current_gpu_number: $(nvidia-smi --query-gpu=name,memory.free --format=csv -i $current_gpu_number)"
+done
+
 echo "enter the number of instances per GPU [1]:"
 read -r INSTANCES_PER_GPU
 
