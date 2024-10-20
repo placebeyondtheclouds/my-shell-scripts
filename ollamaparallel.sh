@@ -39,12 +39,11 @@ INSTANCES_PER_GPU=""
 while [[ ! $INSTANCES_PER_GPU =~ ^[0-9]+$ ]]; do
     echo "enter the number of instances per GPU [1]:"
     read -r INSTANCES_PER_GPU
+    if [ -z "$INSTANCES_PER_GPU" ]; then
+        echo "instances per GPU not set. Using 1."
+        INSTANCES_PER_GPU=1
+    fi
 done
-
-if [ -z "$INSTANCES_PER_GPU" ]; then
-    echo "instances per GPU not set. Using 1."
-    INSTANCES_PER_GPU=1
-fi
 
 echo >ollamaports.txt
 
