@@ -21,7 +21,6 @@ if [ -n "$alreadyrunning" ]; then
     echo "stop ollama? [y/N]:"
     read -n 1 -s -r -p "" key
     if [ "$key" = "y" ]; then
-        # do not kill the current running script ollamaparallel.sh
         pkill "ollama" -x 2>/dev/null
     else
         echo "quitting"
