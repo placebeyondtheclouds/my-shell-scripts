@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# /usr/local/bin/ollamaparallel.sh
-# run with: CUDA_VISIBLE_DEVICES=0,1 ./ollamaparallel.sh
+# run with: CUDA_VISIBLE_DEVICES=0,1 ollamaparallel
 
 #start at
 PORT=11435
@@ -9,7 +8,8 @@ PORT=11435
 # get the number of GPUs from CUDA_VISIBLE_DEVICES
 if [ -z "$CUDA_VISIBLE_DEVICES" ]; then
     echo "CUDA_VISIBLE_DEVICES is not set. Using all GPUs."
-    GPUS=($(seq 0 $(($(nvidia-smi --query-gpu=count --format=csv,noheader) - 1))))
+    GPU_COUNT=$(nvidia-smi --list-gpus | wc -l)
+    GPUS=($(seq 0 $((GPU_COUNT - 1))))
 else
     GPUS=($(echo $CUDA_VISIBLE_DEVICES | tr ',' ' '))
 fi
