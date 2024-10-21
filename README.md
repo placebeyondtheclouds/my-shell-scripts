@@ -57,15 +57,15 @@ Inspired by a line from Heath Adams course on privesc
 
 - strip the gzip compression from from tar.gz on the fly
 
-  - `zcat cv-corpus-15.0-2023-09-08-ca.tar.gz > cv-corpus-15.0-2023-09-08-ca.tar`
+  `zcat cv-corpus-15.0-2023-09-08-ca.tar.gz > cv-corpus-15.0-2023-09-08-ca.tar`
 
 - likewise, creating tar archives from multiple tar.gz, tgz, and other archive files in the current directory on the fly
 
-  - `for onetgz in *.tar.gz; do echo "转换ing $onetgz"; zcat $onetgz > ${onetgz%.gz}; done`
+  `for onetgz in *.tar.gz; do echo "转换ing $onetgz"; zcat $onetgz > ${onetgz%.gz}; done`
 
-  - `for onetgz in *.tgz; do echo "转换ing $onetgz"; zcat $onetgz > ${onetgz%.tgz}.tar; done`
+  `for onetgz in *.tgz; do echo "转换ing $onetgz"; zcat $onetgz > ${onetgz%.tgz}.tar; done`
 
-  - for other archive formats [repacktotar.sh](repacktotar.sh): `./repacktotar.sh`
+  for other archive formats [repacktotar.sh](repacktotar.sh): `./repacktotar.sh`
 
 - creating tar archives on the fly from multipart `*.tar.gz.aa *.tar.gz.ab` etc.: [multipart-targz-to-tar.sh](multipart-targz-to-tar.sh). run it like `./multipart-targz-to-tar.sh /path/to/destination`
 
