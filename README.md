@@ -181,6 +181,6 @@ df_bad.tail(10)
 
 `controlc() { echo "SIGINT caught"; exit; }; trap controlc SIGINT; for file in *.gz; do echo "Extracting $file"; gunzip -c "$file" > /path/to/destination/"${file%.gz}"; done`
 
-## test all gzip archives in the current directory
+## test all gzip archives in the current directory and rm failed ones
 
 `controlc() { echo "SIGINT caught"; exit; }; trap controlc SIGINT; for file in *.gz; do echo "Testing $file"; zcat "$file" > /dev/null; if [ $? -eq 0 ]; then echo "OK"; else echo "Failed"; rm "$file"; fi; done`
