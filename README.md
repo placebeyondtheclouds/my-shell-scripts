@@ -74,7 +74,7 @@ Inspired by a line from Heath Adams course on privesc
 ## mounting tar archives as directories
 
 - install [ratarmount](https://github.com/mxmlnkn/ratarmount) `conda install -c conda-forge ratarmount` or `pip install ratarmount`
-- use mount-tars.sh: `./mount-tars.sh /path/to/tars path/to/mountpoint`
+- use [mount-tars.sh](mount-tars.sh): `./mount-tars.sh /path/to/tars path/to/mountpoint`
 
 ## file checksums
 
