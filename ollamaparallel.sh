@@ -25,6 +25,7 @@ if [ -n "$alreadyrunning" ]; then
     read -n 1 -s -r -p "" key
     if [ "$key" = "y" ]; then
         pkill "ollama" -x 2>/dev/null
+        echo -e "\nollama stopped\n"
     else
         echo "quitting"
         exit 1
@@ -47,6 +48,11 @@ while [[ ! $INSTANCES_PER_GPU =~ ^[0-9]+$ ]]; do
         INSTANCES_PER_GPU=1
     fi
 done
+
+if [ "$INSTANCES_PER_GPU" -eq 0 ]; then
+    echo "Exiting."
+    exit 1
+fi
 
 # start the processes
 echo >ollamaports.txt
