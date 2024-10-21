@@ -31,6 +31,7 @@ if [ -n "$alreadyrunning" ]; then
         exit 1
     fi
 fi
+echo >ollamaports.txt
 
 # display current situation
 echo "using GPUs: ${GPUS[*]}"
@@ -55,7 +56,6 @@ if [ "$INSTANCES_PER_GPU" -eq 0 ]; then
 fi
 
 # start the processes
-echo >ollamaports.txt
 for current_gpu_number in "${GPUS[@]}"; do
     for process_number in $(seq 1 $((INSTANCES_PER_GPU))); do
         ((PORT += 1))
