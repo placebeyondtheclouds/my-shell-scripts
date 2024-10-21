@@ -16,6 +16,7 @@ else
     GPUS=($(echo $CUDA_VISIBLE_DEVICES | tr ',' ' '))
 fi
 
+# check if ollama serve instances are already running
 alreadyrunning=$(ss -ntlp | grep -w "ollama" | awk '{print $4}' | awk -F: '{print $2}')
 if [ -n "$alreadyrunning" ]; then
     echo "ollama already running on ports:"
@@ -30,11 +31,13 @@ if [ -n "$alreadyrunning" ]; then
     fi
 fi
 
+# display current situation
 echo "using GPUs: ${GPUS[*]}"
 for current_gpu_number in "${GPUS[@]}"; do
     echo "GPU $current_gpu_number: $(nvidia-smi --query-gpu=name,memory.free --format=csv -i $current_gpu_number)"
 done
 
+# set number of processes per GPU
 INSTANCES_PER_GPU=""
 while [[ ! $INSTANCES_PER_GPU =~ ^[0-9]+$ ]]; do
     echo "enter the number of instances per GPU [1]:"
@@ -45,8 +48,8 @@ while [[ ! $INSTANCES_PER_GPU =~ ^[0-9]+$ ]]; do
     fi
 done
 
+# start the processes
 echo >ollamaports.txt
-
 for current_gpu_number in "${GPUS[@]}"; do
     for process_number in $(seq 1 $((INSTANCES_PER_GPU))); do
         ((PORT += 1))
@@ -59,8 +62,8 @@ for current_gpu_number in "${GPUS[@]}"; do
     done
 done
 
+echo -e " \n"
 echo "ports are written to ollamaports.txt"
-
 echo "to kill all ollama instances, run: "
 echo -e "\033[0;31mpkill ollama\033[0m"
 echo "to see the running instances, run: "
