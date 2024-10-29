@@ -29,6 +29,10 @@ SystemMaxUse=5000M
 
 `find . -type f -name "*.log" | xargs cat | grep -E -i -w "word1|word2|word3" -C1`
 
+## Find in code
+
+`find . -type f -iname "*.py" -exec grep -Hi "import pandas as pd" '{}' + | grep -v "#"`
+
 ## Check archives in current directory for errors
 
 Usage: `./checkarchives.sh`
@@ -41,7 +45,7 @@ Link to the file: [findinarch.sh](findinarch.sh)
 
 ## Find and highlight a string within all files
 
-Inspired by a line from Heath Adams course on privesc
+Inspired by a line from Heath Adams course on privesc:
 
 `grep --color=always -rn '.' --include \*.sh -ie "/dev/tcp/" 2>/dev/null`
 
@@ -184,3 +188,7 @@ df_bad.tail(10)
 ## test all gzip archives in the current directory and rm failed ones
 
 `controlc() { echo "SIGINT caught"; exit; }; trap controlc SIGINT; for file in *.gz; do echo "Testing $file"; zcat "$file" > /dev/null; if [ $? -eq 0 ]; then echo "OK"; else echo "Failed"; rm "$file"; fi; done`
+
+## Get TBW for all drives that support the attribute
+
+`for drive in /dev/sd[a-z]; do sudo smartctl --attributes $drive | awk -v devname=$drive '/Total_LBAs_Written/{B=$10 * 512; printf("%s: TBW: %.2f TiB\n", devname, B/1024^4)}'; done`
