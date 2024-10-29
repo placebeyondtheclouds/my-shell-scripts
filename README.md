@@ -191,6 +191,9 @@ df_bad.tail(10)
 
 ## Get TBW (Total Bytes Written) for all drives that support the attribute
 
+TBW is calculated as `total LBA writes * physical block size`. Different drives have different physical block sizes, the exact value should be taken from the SMART report. Total LBA writes is stored in different attributes for different manufacturers.
+
+A simple example for 512B block size:
 `for drive in /dev/sd[a-z]; do sudo smartctl --attributes $drive | awk -v devname=$drive '/(241|246)/{B=$10 * 512; printf("%s: Attribute %d: %.2f TiB\n", devname, $1, B/1024^4)}'; done`
 
-more precise script for TBW [tbw.sh](tbw.sh)
+More robust and precise script for TBW [tbw.sh](tbw.sh)
