@@ -2,6 +2,19 @@
 # smart parameters references https://www.backblaze.com/blog/making-sense-of-ssd-smart-stats/
 
 for drive in /dev/sd[a-z]; do
+
+    #for INTEL:
+    if sudo smartctl -a $drive | grep -q "Model Family:     Intel"; then
+        onewrite=32768
+        sudo smartctl --attributes $drive | awk -v devname=$drive -v onewrite=$onewrite '
+    /(241)/ {
+      B=$10 * onewrite;
+      printf("%s: Attribute %d, Intel: %.2f TiB \n", devname, $1, B/1024^4, onewrite)
+    }'
+        continue
+    fi
+
+    #for Samsung and Crucial:
     pss=$(
         sudo smartctl -a $drive | awk '
         /Sector Sizes|Sector Size/ {
@@ -14,9 +27,6 @@ for drive in /dev/sd[a-z]; do
             }
         }'
     )
-
-    # Debugging information
-    #echo "Drive: $drive, Physical Sector Size: $pss"
 
     # Check if pss is empty or zero
     if [[ -z "$pss" || "$pss" == "bytes" || "$pss" -eq 0 ]]; then

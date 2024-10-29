@@ -191,9 +191,21 @@ df_bad.tail(10)
 
 ## Get TBW (Total Bytes Written) for all drives that support the attribute
 
-TBW is calculated as `total LBA writes * physical block size`. Different drives have different physical block sizes, the exact value should be taken from the SMART report. Total LBA writes is stored in different attributes for different manufacturers.
+TBW is calculated as `total LBA writes * physical block size`. Different drives have different physical block sizes, the exact value should be taken from the SMART report. Total LBA writes is stored in different attributes for different manufacturers. Intel also counts it differently, the raw value is increased by 1 for every 65,536 sectors (32MB) written by the host.
 
 A simple example for 512B block size:
 `for drive in /dev/sd[a-z]; do sudo smartctl --attributes $drive | awk -v devname=$drive '/(241|246)/{B=$10 * 512; printf("%s: Attribute %d: %.2f TiB\n", devname, $1, B/1024^4)}'; done`
 
 More robust and precise script for TBW [tbw.sh](tbw.sh)
+
+## Find a message in dmesg logs and convert the timestamps to human-readable format
+
+```
+dmesg | grep "I/O error, dev " | while read -r line; do
+timestamp=$(echo "$line" | grep -oP '\[\K[0-9]+\.[0-9]+(?=\])')
+boot_time=$(date -d "$(uptime -s)" +%s)
+log_time=$(echo "$boot_time + $timestamp" | bc)
+  formatted_date=$(date -d "@$log_time" +"[%Y-%m-%d %H:%M:%S]")
+  echo "$line" | sed "s/\[$timestamp\]/$formatted_date/"
+done
+```
