@@ -189,6 +189,8 @@ df_bad.tail(10)
 
 `controlc() { echo "SIGINT caught"; exit; }; trap controlc SIGINT; for file in *.gz; do echo "Testing $file"; zcat "$file" > /dev/null; if [ $? -eq 0 ]; then echo "OK"; else echo "Failed"; rm "$file"; fi; done`
 
-## Get TBW for all drives that support the attribute
+## Get TBW (Total Bytes Written) for all drives that support the attribute
 
-`for drive in /dev/sd[a-z]; do sudo smartctl --attributes $drive | awk -v devname=$drive '/Total_LBAs_Written/{B=$10 * 512; printf("%s: TBW: %.2f TiB\n", devname, B/1024^4)}'; done`
+`for drive in /dev/sd[a-z]; do sudo smartctl --attributes $drive | awk -v devname=$drive '/(241|246)/{B=$10 * 512; printf("%s: Attribute %d: %.2f TiB\n", devname, $1, B/1024^4)}'; done`
+
+more precise script for TBW [tbw.sh](tbw.sh)
