@@ -201,11 +201,12 @@ More robust and precise script for TBW [tbw.sh](tbw.sh)
 ## Find a message in dmesg logs and convert the timestamps to human-readable format
 
 ```
-dmesg | grep "I/O error, dev " | while read -r line; do
-timestamp=$(echo "$line" | grep -oP '\[\K[0-9]+\.[0-9]+(?=\])')
-boot_time=$(date -d "$(uptime -s)" +%s)
-log_time=$(echo "$boot_time + $timestamp" | bc)
+sudo dmesg | grep "I/O error, dev " | while read -r line; do
+  timestamp=$(echo "$line" | grep -oP '\[\s*\K[0-9]+\.[0-9]+(?=\])')
+  boot_time=$(date -d "$(uptime -s)" +%s)
+  timestamp_int=${timestamp%.*}
+  log_time=$((boot_time + timestamp_int))
   formatted_date=$(date -d "@$log_time" +"[%Y-%m-%d %H:%M:%S]")
-  echo "$line" | sed "s/\[$timestamp\]/$formatted_date/"
+  echo "$line" | sed "s/\[\s*$timestamp\]/$formatted_date/"
 done
 ```
