@@ -75,6 +75,8 @@ Inspired by a line from Heath Adams course on privesc:
 
 - test tar - `tar -tf file.tar &> /dev/null && echo "tar is good"`
 
+- Pack a directory into a tar and send it over ssh - `tar -cf - dir | ssh user@host "cat > file.tar"`
+
 ## mounting tar archives as directories
 
 - install [ratarmount](https://github.com/mxmlnkn/ratarmount) `conda install -c conda-forge ratarmount` or `pip install ratarmount`
