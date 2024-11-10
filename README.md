@@ -67,9 +67,9 @@ grep --color=always -rn '/' -ie "password" 2>/dev/null
 
 - strip the gzip compression from from tar.gz on the fly
 
-  ```shell
-  zcat cv-corpus-15.0-2023-09-08-ca.tar.gz > cv-corpus-15.0-2023-09-08-ca.tar
-  ```
+```shell
+zcat cv-corpus-15.0-2023-09-08-ca.tar.gz > cv-corpus-15.0-2023-09-08-ca.tar
+```
 
 - likewise, creating tar archives from multiple tar.gz, tgz, and other archive files in the current directory on the fly
 
@@ -190,11 +190,15 @@ print(df_bad)
 
 ## extract all zip archives in the current directory to their own directories
 
-`for file in *.zip; do unzip -d "${file%.*}" "$file"; done`
+```shell
+for file in *.zip; do unzip -d "${file%.*}" "$file"; done
+```
 
 ## extract all tar.gz archives in the current directory
 
-`for file in *.tar.gz; do echo "Extracting $file"; tar -xzf "$file"; done`
+```shell
+for file in *.tar.gz; do echo "Extracting $file"; tar -xzf "$file"; done
+```
 
 ## extract all \*.gz archives in the current directory to a specified location
 
