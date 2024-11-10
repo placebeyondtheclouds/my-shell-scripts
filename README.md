@@ -223,7 +223,9 @@ TBW is calculated as `total LBA writes * physical block size`. Different drives 
 A simple example for 512B block size:
 
 ```shell
-for drive in /dev/sd[a-z]; do sudo smartctl --attributes $drive | awk -v devname=$drive '/(241|246)/{B=$10 * 512; printf("%s: Attribute %d: %.2f TiB\n", devname, $1, B/1024^4)}'; done
+for drive in /dev/sd[a-z]; do
+sudo smartctl --attributes $drive | awk -v devname=$drive '/(241|246)/{B=$10 * 512; printf("%s: Attribute %d: %.2f TiB\n", devname, $1, B/1024^4)}';
+done
 ```
 
 More robust and precise script for TBW [tbw.sh](tbw.sh)
