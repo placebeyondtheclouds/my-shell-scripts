@@ -8,14 +8,13 @@ for drive in /dev/sd[a-z]; do
     *Intel*)
         onewrite=32768
         sudo smartctl --attributes $drive | awk -v devname=$drive -v onewrite=$onewrite '
-            /(241)/ {
+            $1 == "241" {
               B=$10 * onewrite;
               printf("%s: Attribute %d, Intel: %.2f TiB \n", devname, $1, B/1024^4, onewrite)
             }'
         ;;
-    #Any other vendor. Tested on Crucial an Samsung
+    #Any other vendor. Tested on Crucial and Samsung
     *)
-
         pss=$(
             sudo smartctl -a $drive | awk '
                 /Sector Sizes|Sector Size/ {
@@ -30,11 +29,10 @@ for drive in /dev/sd[a-z]; do
         )
 
         sudo smartctl --attributes $drive | awk -v devname=$drive -v pss=$pss '
-            /(241|246)/ {
+            $1 == "241" || $1 == "246" {
               B=$10 * pss;
               printf("%s: Attribute %d: %.2f TiB (Physical Sector Size: %d bytes)\n", devname, $1, B/1024^4, pss)
             }'
         ;;
-
     esac
 done
