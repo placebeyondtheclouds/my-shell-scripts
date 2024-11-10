@@ -13,7 +13,7 @@ for drive in /dev/sd[a-z]; do
               printf("%s: Attribute %d, Intel: %.2f TiB \n", devname, $1, B/1024^4, onewrite)
             }'
         ;;
-    #any other vendor
+    #Any other vendor. Tested on Crucial an Samsung
     *)
 
         pss=$(
