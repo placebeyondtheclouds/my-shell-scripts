@@ -202,7 +202,7 @@ More robust and precise script for TBW [tbw.sh](tbw.sh)
 
 ## Find a message in dmesg logs and convert the timestamps to human-readable format
 
-```
+```shell
 sudo dmesg | grep "I/O error, dev " | while read -r line; do
   timestamp=$(echo "$line" | grep -oP '\[\s*\K[0-9]+\.[0-9]+(?=\])')
   boot_time=$(date -d "$(uptime -s)" +%s)
