@@ -23,15 +23,19 @@ SystemMaxUse=5000M
 
 ## Parsing logs
 
-`find . -type f -iname "*.log" -exec grep --color=always -Hi -B 1 -A 1 "core dumped" '{}' + ;`
+```shell
+find . -type f -iname "*.log" -exec grep --color=always -Hi -B 1 -A 1 "core dumped" '{}' + ;
 
-`find . -type f -name "*.log" | xargs cat | grep -e "core dumped" -C1`
+find . -type f -name "*.log" | xargs cat | grep -e "core dumped" -C1
 
-`find . -type f -name "*.log" | xargs cat | grep -E -i -w "word1|word2|word3" -C1`
+find . -type f -name "*.log" | xargs cat | grep -E -i -w "word1|word2|word3" -C1
+```
 
 ## Find in code
 
-`find . -type f -iname "*.py" -exec grep -Hi "import pandas as pd" '{}' + | grep -v "#"`
+```shell
+find . -type f -iname "*.py" -exec grep -Hi "import pandas as pd" '{}' + | grep -v "#"
+```
 
 ## Check archives in current directory for errors
 
@@ -47,9 +51,11 @@ Link to the file: [findinarch.sh](findinarch.sh)
 
 Inspired by a line from Heath Adams course on privesc:
 
-`grep --color=always -rn '.' --include \*.sh -ie "/dev/tcp/" 2>/dev/null`
+```shell
+grep --color=always -rn '.' --include \*.sh -ie "/dev/tcp/" 2>/dev/null
 
-`grep --color=always -rn '/' -ie "password" 2>/dev/null`
+grep --color=always -rn '/' -ie "password" 2>/dev/null
+```
 
 ## start multiple ollama serve
 
@@ -61,13 +67,19 @@ Inspired by a line from Heath Adams course on privesc:
 
 - strip the gzip compression from from tar.gz on the fly
 
-  `zcat cv-corpus-15.0-2023-09-08-ca.tar.gz > cv-corpus-15.0-2023-09-08-ca.tar`
+  ```shell
+  zcat cv-corpus-15.0-2023-09-08-ca.tar.gz > cv-corpus-15.0-2023-09-08-ca.tar
+  ```
 
 - likewise, creating tar archives from multiple tar.gz, tgz, and other archive files in the current directory on the fly
 
-  `for onetgz in *.tar.gz; do echo "转换ing $onetgz"; zcat $onetgz > ${onetgz%.gz}; done`
+  ```shell
+  for onetgz in *.tar.gz; do echo "转换ing $onetgz"; zcat $onetgz > ${onetgz%.gz}; done
+  ```
 
-  `for onetgz in *.tgz; do echo "转换ing $onetgz"; zcat $onetgz > ${onetgz%.tgz}.tar; done`
+  ```shell
+  for onetgz in *.tgz; do echo "转换ing $onetgz"; zcat $onetgz > ${onetgz%.tgz}.tar; done
+  ```
 
   for other archive formats [repacktotar.sh](repacktotar.sh): `./repacktotar.sh`
 
@@ -92,13 +104,13 @@ relative paths, current directory with it's subdirectories, overwrites existing 
 
   - create:
 
-    ```
+    ```shell
     find . -type f -exec md5 -r {} \; > checksums.md5
     ```
 
   - verify:
 
-    ```
+    ```shell
     while read -r checksum file; do
         calculated_checksum=$(md5 -r "$file" | awk '{print $1}')
         if [[ $checksum != $calculated_checksum ]]; then
@@ -111,13 +123,13 @@ relative paths, current directory with it's subdirectories, overwrites existing 
 
   - create:
 
-    ```
+    ```shell
     find . -type f -exec md5sum {} \; > checksums.md5
     ```
 
   - verify:
 
-    ```
+    ```shell
     while read -r checksum file; do
         calculated_checksum=$(md5sum "$file" | awk '{print $1}')
         if [[ $checksum != $calculated_checksum ]]; then
@@ -134,13 +146,13 @@ relative paths, current directory only
 
   - create:
 
-    ```
+    ```shell
     md5sum * > checklist.chk
     ```
 
   - verify:
 
-    ```
+    ```shell
     md5sum -c checklist.chk
     ```
 
@@ -152,19 +164,20 @@ relative paths, current directory with it's subdirectories, one checksum file pe
 
   - create:
 
-    ```
+    ```shell
     find "$PWD" -type d | sort | while read dir; do cd "${dir}"; [ ! -f @md5Sum.md5 ] && echo "Processing " "${dir}" || echo "Skipped " "${dir}" " @md5Sum.md5 already present" ; [ ! -f @md5Sum.md5 ] &&  md5sum * > @md5Sum.md5 ; chmod a=r "${dir}"/@md5Sum.md5 ;done
     ```
 
   - verify:
 
-    ```
+    ```shell
     find "$PWD" -name @md5Sum.md5 | sort | while read file; do cd "${file%/*}"; md5sum -c @md5Sum.md5; done > checklog.txt
     ```
 
 ### analyze the checksum check log
 
-```
+```python
+#!/usr/bin/env python
 import pandas as pd
 
 log_file_name = "checklog.txt"
@@ -172,7 +185,7 @@ df = pd.read_csv(log_file_name, sep=":", header=None, names=["file", "result"])
 df_bad = df[~df["result"].str.contains("OK")]
 print("total:", len(df))
 print("bad:", len(df_bad))
-df_bad.tail(10)
+print(df_bad)
 ```
 
 ## extract all zip archives in the current directory to their own directories
@@ -185,18 +198,29 @@ df_bad.tail(10)
 
 ## extract all \*.gz archives in the current directory to a specified location
 
-`controlc() { echo "SIGINT caught"; exit; }; trap controlc SIGINT; for file in *.gz; do echo "Extracting $file"; gunzip -c "$file" > /path/to/destination/"${file%.gz}"; done`
+```shell
+controlc() { echo "SIGINT caught"; exit; }; trap controlc SIGINT; for file in *.gz; do
+echo "Extracting $file"; gunzip -c "$file" > /path/to/destination/"${file%.gz}";
+done
+```
 
 ## test all gzip archives in the current directory and rm failed ones
 
-`controlc() { echo "SIGINT caught"; exit; }; trap controlc SIGINT; for file in *.gz; do echo "Testing $file"; zcat "$file" > /dev/null; if [ $? -eq 0 ]; then echo "OK"; else echo "Failed"; rm "$file"; fi; done`
+```shell
+controlc() { echo "SIGINT caught"; exit; }; trap controlc SIGINT; for file in *.gz; do
+echo "Testing $file"; zcat "$file" > /dev/null; if [ $? -eq 0 ]; then echo "OK"; else echo "Failed"; rm "$file"; fi;
+done
+```
 
 ## Get TBW (Total Bytes Written) for all drives that support the attribute
 
 TBW is calculated as `total LBA writes * physical block size`. Different drives have different physical block sizes, the exact value should be taken from the SMART report. Total LBA writes is stored in different attributes for different manufacturers. Intel also counts it differently, the raw value is increased by 1 for every 65,536 sectors (32MB) written by the host.
 
 A simple example for 512B block size:
-`for drive in /dev/sd[a-z]; do sudo smartctl --attributes $drive | awk -v devname=$drive '/(241|246)/{B=$10 * 512; printf("%s: Attribute %d: %.2f TiB\n", devname, $1, B/1024^4)}'; done`
+
+```shell
+for drive in /dev/sd[a-z]; do sudo smartctl --attributes $drive | awk -v devname=$drive '/(241|246)/{B=$10 * 512; printf("%s: Attribute %d: %.2f TiB\n", devname, $1, B/1024^4)}'; done
+```
 
 More robust and precise script for TBW [tbw.sh](tbw.sh)
 
@@ -204,11 +228,11 @@ More robust and precise script for TBW [tbw.sh](tbw.sh)
 
 ```shell
 sudo dmesg | grep "I/O error, dev " | while read -r line; do
-  timestamp=$(echo "$line" | grep -oP '\[\s*\K[0-9]+\.[0-9]+(?=\])')
-  boot_time=$(date -d "$(uptime -s)" +%s)
-  timestamp_int=${timestamp%.*}
-  log_time=$((boot_time + timestamp_int))
-  formatted_date=$(date -d "@$log_time" +"[%Y-%m-%d %H:%M:%S]")
-  echo "$line" | sed "s/\[\s*$timestamp\]/$formatted_date/"
+timestamp=$(echo "$line" | grep -oP '\[\s*\K[0-9]+\.[0-9]+(?=\])')
+boot_time=$(date -d "$(uptime -s)" +%s)
+timestamp_int=${timestamp%.*}
+log_time=$((boot_time + timestamp_int))
+formatted_date=$(date -d "@$log_time" +"[%Y-%m-%d %H:%M:%S]")
+echo "$line" | sed "s/\[\s*$timestamp\]/$formatted_date/"
 done
 ```
