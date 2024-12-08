@@ -281,30 +281,6 @@ done
   ```shell
   for file in $(ls | grep -a -i -e ".jpg"); do
   date=$(exiftool -s -s -s -d "%Y-%m-%d %H.%M.%S" -DateTimeOriginal "$file")
-  if [ ! -z "$date" ]; then
   mv "$file" "$date.jpg"
-  echo "$file -> $date.jpg"
-  else
-  echo "No exif data for $file"
-  fi
-  done
-  ```
-
-- convert png to jpg
-
-  ```shell
-  for file in $(ls | grep -a -i -e ".png"); do
-  convert "$file" "${file%.png}.jpg"
-  echo "$file -> ${file%.png}.jpg"
-  done
-  ```
-
-- resize jpg to 50%
-  ```shell
-  mkdir -p resized
-  IFS=$'\n'
-  for file in $(ls | grep -a -i -e ".jpg"); do
-  convert "$file" -resize 50% resized/"$file"
-  echo "$file -> resized/$file"
   done
   ```
