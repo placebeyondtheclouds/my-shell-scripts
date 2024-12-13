@@ -279,6 +279,7 @@ done
 - rename the files with date and time from exif data
 
   ```shell
+  IFS=$'\n'
   for file in $(ls | grep -a -i -e ".jpg"); do
   date=$(exiftool -s -s -s -d "%Y-%m-%d %H.%M.%S" -DateTimeOriginal "$file")
   if [ ! -z "$date" ]; then
