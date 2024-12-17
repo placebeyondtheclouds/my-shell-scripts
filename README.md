@@ -220,15 +220,7 @@ done
 
 TBW is calculated as `total LBA writes * physical block size`. Different drives have different physical block sizes, the exact value should be taken from the SMART report. Total LBA writes is stored in different attributes for different manufacturers. Intel also counts it differently, the raw value is increased by 1 for every 65,536 sectors (32MB) written by the host.
 
-A simple example for 512B block size:
-
-```shell
-for drive in /dev/sd[a-z]; do
-sudo smartctl --attributes $drive | awk -v devname=$drive '/(241|246)/{B=$10 * 512; printf("%s: Attribute %d: %.2f TiB\n", devname, $1, B/1024^4)}';
-done
-```
-
-More robust and precise script for TBW [tbw.sh](tbw.sh)
+The script for TBW [tbw.sh](tbw.sh)
 
 ## drives
 
@@ -269,7 +261,8 @@ done
 
 ## image processing
 
-- `sudo apt install libimage-exiftool-perl`
+- `sudo apt install imagemagick libimage-exiftool-perl`
+
 - remove exif data from all images in the current directory
 
   ```shell
