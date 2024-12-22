@@ -274,6 +274,7 @@ done
   ```
 
 - resize jpg to 50%
+
   ```shell
   mkdir -p resized
   IFS=$'\n'
@@ -281,4 +282,11 @@ done
   convert "$file" -resize 50% resized/"$file"
   echo "$file -> resized/$file"
   done
+  ```
+
+- another way is to use ffmpeg:
+
+  ```shell
+  ffmpeg -i image.jpeg -map_metadata -1 -c:v copy stripped.jpeg
+  exiftool -if '$gps*' -gps* "stripped.jpeg"
   ```
