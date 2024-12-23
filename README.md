@@ -290,3 +290,9 @@ done
   ffmpeg -i image.jpeg -map_metadata -1 -c:v copy stripped.jpeg
   exiftool -if '$gps*' -gps* "stripped.jpeg"
   ```
+
+## batch rename files
+
+```shell
+IFS=$'\n'; mkv_files=($(ls *.mkv)); for i in "${!mkv_files[@]}"; do mv "${mkv_files[i]}" "S01E$(printf "%02d" $((i + 1))).mkv"; done
+```
