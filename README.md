@@ -35,6 +35,7 @@ find . -type f -name "*.log" | xargs cat | grep -E -i -w "word1|word2|word3" -C1
 
 ```shell
 find . -type f -iname "*.py" -exec grep -Hi "import pandas as pd" '{}' + | grep -v "#"
+find . -type f -iname "*.py" -exec grep --color=always -Hi "import jieba" '{}' + 2>/dev/null | grep -v ".check"
 ```
 
 ## Check archives in current directory for errors
@@ -295,4 +296,15 @@ done
 
 ```shell
 IFS=$'\n'; mkv_files=($(ls *.mkv)); for i in "${!mkv_files[@]}"; do mv "${mkv_files[i]}" "S01E$(printf "%02d" $((i + 1))).mkv"; done
+```
+
+## split the file into parts of 500MB (for instance, for uploading large files to github LFS)
+
+```shell
+#split
+sha256sum file.tar > checksum.sha256
+split -b 500M file.tar file.tar.part-
+#combine
+cat file.tar.part-?? > file.tar
+sha256sum -c checksum.sha256 | grep "OK"
 ```
