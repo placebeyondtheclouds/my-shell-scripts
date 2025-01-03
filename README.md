@@ -88,8 +88,6 @@ zcat cv-corpus-15.0-2023-09-08-ca.tar.gz > cv-corpus-15.0-2023-09-08-ca.tar
 
 - test tar - `tar -tf file.tar &> /dev/null && echo "tar is good"`
 
-- Pack a directory into a tar and send it over ssh - `tar -cf - dir | ssh user@host "cat > file.tar"`
-
 ## mounting tar archives as directories
 
 - install [ratarmount](https://github.com/mxmlnkn/ratarmount) `conda install -c conda-forge ratarmount` or `pip install ratarmount`
@@ -215,6 +213,20 @@ done
 controlc() { echo "SIGINT caught"; exit; }; trap controlc SIGINT; for file in *.gz; do
 echo "Testing $file"; zcat "$file" > /dev/null; if [ $? -eq 0 ]; then echo "OK"; else echo "Failed"; rm "$file"; fi;
 done
+```
+
+## exfil
+
+```shell
+#pack on a remote machine without compression and send over ssh
+ssh user@ip "zip -r -0 - /path/to/dir" > local_archive.zip
+ssh user@ip "tar -cf - /path/to/dir" > local_archive.tar
+
+#compressed
+ssh user@ip "tar czf - /path/to/dir" | cat > local_archive.tar.gz
+
+#pack a directory into a tar and send it over ssh to a remote machine
+tar -cf - /path/to/dir | ssh user@ip "cat > local_archive.tar"
 ```
 
 ## Get TBW (Total Bytes Written) for all drives that support the attribute
