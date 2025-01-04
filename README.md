@@ -227,6 +227,10 @@ ssh user@ip "tar czf - /path/to/dir" | cat > local_archive.tar.gz
 
 #pack a directory into a tar and send it over ssh to a remote machine
 tar -cf - /path/to/dir | ssh user@ip "cat > local_archive.tar"
+
+# on the fly with compression
+while true; do nc -v -l -p 8080 | tar -xzvf -; done
+tar -czvf - /path/to/dir | nc -v ip 8080 -q1
 ```
 
 ## Get TBW (Total Bytes Written) for all drives that support the attribute
