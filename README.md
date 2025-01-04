@@ -229,7 +229,7 @@ ssh user@ip "tar czf - /path/to/dir" | cat > local_archive.tar.gz
 tar -cf - /path/to/dir | ssh user@ip "cat > local_archive.tar"
 
 # on the fly with compression
-while true; do nc -v -l -p 8080 | tar -xzvf -; done
+nc -v -l -p 8080 | tar -xzvf -
 tar -czvf - /path/to/dir | nc -v ip 8080 -q1
 ```
 
