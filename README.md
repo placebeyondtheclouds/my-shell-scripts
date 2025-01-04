@@ -218,7 +218,7 @@ done
 ## exfil
 
 ```shell
-#pack on a remote machine without compression and send over ssh
+#pack on a remote machine without compression and receive it over ssh
 ssh user@ip "zip -r -0 - /path/to/dir" > local_archive.zip
 ssh user@ip "tar -cf - /path/to/dir" > local_archive.tar
 
