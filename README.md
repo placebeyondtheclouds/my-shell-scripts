@@ -324,9 +324,3 @@ split -b 500M file.tar file.tar.part-
 cat file.tar.part-?? > file.tar
 sha256sum -c checksum.sha256 | grep "OK"
 ```
-
-## clone an SD card
-
-```shell
-sudo dd if=/dev/sda bs=1M | pv -s $(sudo blockdev --getsize64 /dev/sda) | sudo dd of=/dev/mmcblk0 bs=1M
-```
