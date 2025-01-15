@@ -284,6 +284,7 @@ done
 - convert png to jpg
 
   ```shell
+  IFS=$'\n'
   for file in $(ls | grep -a -i -e ".png"); do
   convert "$file" "${file%.png}.jpg"
   echo "$file -> ${file%.png}.jpg"
