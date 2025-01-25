@@ -325,3 +325,9 @@ split -b 500M file.tar file.tar.part-
 cat file.tar.part-?? > file.tar
 sha256sum -c checksum.sha256 | grep "OK"
 ```
+
+## get a report on GPUs temps
+
+```shell
+nvidia-smi --query-gpu=gpu_name,temperature.gpu --format=csv,noheader | while IFS=, read -r name temp; do echo "GPU: $name Temperature: $temp°C"; done
+```
