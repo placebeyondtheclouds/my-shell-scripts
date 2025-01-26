@@ -331,3 +331,9 @@ sha256sum -c checksum.sha256 | grep "OK"
 ```shell
 nvidia-smi --query-gpu=gpu_name,temperature.gpu --format=csv,noheader | while IFS=, read -r name temp; do echo "GPU: $name Temperature: $temp°C"; done
 ```
+
+## top commands
+
+```shell
+cat ~/.bash_history | cut -d';' -f2- | awk '{print $1}' | sort | uniq -c | sort -rn | head -n 10
+```
