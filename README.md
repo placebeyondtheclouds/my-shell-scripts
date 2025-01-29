@@ -337,3 +337,10 @@ nvidia-smi --query-gpu=gpu_name,temperature.gpu --format=csv,noheader | while IF
 ```shell
 cat ~/.bash_history | cut -d';' -f2- | awk '{print $1}' | sort | uniq -c | sort -rn | head -n 10
 ```
+
+## run wireshark on a remote machine
+
+```shell
+ssh -t $USER@192.168.3.200 sudo setcap cap_net_raw,cap_net_admin=eip /usr/bin/tcpdump
+ssh $USER@192.168.3.200 tcpdump -i eth0 -U -s0 -w - 'port not 22' | sudo wireshark -k -i -
+```
