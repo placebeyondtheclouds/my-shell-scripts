@@ -342,5 +342,6 @@ cat ~/.bash_history | cut -d';' -f2- | awk '{print $1}' | sort | uniq -c | sort 
 
 ```shell
 ssh -t $USER@192.168.3.200 sudo setcap cap_net_raw,cap_net_admin=eip /usr/bin/tcpdump
+sudo echo
 ssh $USER@192.168.3.200 tcpdump -i eth0 -U -s0 -w - 'port not 22' | sudo wireshark -k -i -
 ```
