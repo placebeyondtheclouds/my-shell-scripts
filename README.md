@@ -348,3 +348,32 @@ sudo echo
 ssh $USER@192.168.3.200 tcpdump -i eth0 -U -s0 -w - 'port not 22' | sudo wireshark -k -i -
 ssh -t $USER@192.168.3.200 sudo setcap -r /usr/bin/tcpdump
 ```
+
+## change wifi adapter mac address
+
+```shell
+#!/bin/bash
+
+wifiifall=$(ip link show | grep -i "wl" | awk '{print $2}' | sed 's/://')
+wifiifnum=$(echo "$wifiifall" | nl)
+echo "$wifiifnum"
+read -p "Enter the number of the wifi interface: " wifiifnum
+wifiif=$(echo "$wifiifall" | sed -n "${wifiifnum}p")
+echo
+
+echo "Current MAC address:"
+ip link show | grep -i $wifiif -A 1
+echo
+sudo /sbin/iw $wifiif set power_save off
+sudo iwconfig $wifiif power off
+hostname
+macaddr=$(echo $(hostname) $wifiif | md5sum | sed 's/^\(..\)\(..\)\(..\)\(..\)\(..\).*$/02:\1:\2:\3:\4:\5/')
+sudo ip link set dev $wifiif down
+sudo ip link set dev $wifiif address $macaddr
+sudo ip link set dev $wifiif up
+echo
+echo "New MAC address:"
+ip link show | grep -i $wifiif -A 1
+
+
+```
