@@ -354,12 +354,17 @@ ssh -t $USER@192.168.3.200 sudo setcap -r /usr/bin/tcpdump
 ```shell
 #!/bin/bash
 
+
+if [ $1 ]; then
+    wifiif=$1
+else
 wifiifall=$(ip link show | grep -i "wl" | awk '{print $2}' | sed 's/://')
 wifiifnum=$(echo "$wifiifall" | nl)
 echo "$wifiifnum"
 read -p "Enter the number of the wifi interface: " wifiifnum
 wifiif=$(echo "$wifiifall" | sed -n "${wifiifnum}p")
 echo
+fi
 
 echo "Current MAC address:"
 ip link show | grep -i $wifiif -A 1
