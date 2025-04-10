@@ -360,3 +360,7 @@ ffmpeg -i video.mp4 -vn -acodec copy audio.mp4
 ffmpeg -i video.mp4 -vn -ar 16000  -ac 1 -ab 64k -acodec libmp3lame audio.mp3
 ffmpeg -i input.mov -map 0:a:0 -c copy output.mov
 ```
+
+## fake internet for a kindle
+
+Trick kindle to connect to a hostapd WiFi access point running on a debian machine without Internet access, [kindle_fake_internet.sh](kindle_fake_internet.sh)
