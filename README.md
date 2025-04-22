@@ -340,11 +340,11 @@ cat ~/.bash_history | cut -d';' -f2- | awk '{print $1}' | sort | uniq -c | sort 
 
 ## run wireshark on a remote machine's interface
 
-do **not** use on a multi-user system
+do **not** use on a multi-user target
 
 ```shell
 ssh -t $USER@192.168.3.200 sudo setcap cap_net_raw,cap_net_admin=eip /usr/bin/tcpdump
-sudo echo
+sudo -v #or sudo usermod -a -G wireshark $USER and then relogin
 ssh $USER@192.168.3.200 tcpdump -i eth0 -U -s0 -w - 'port not 22' | sudo wireshark -k -i -
 ssh -t $USER@192.168.3.200 sudo setcap -r /usr/bin/tcpdump
 ```
@@ -358,6 +358,7 @@ ssh -t $USER@192.168.3.200 sudo setcap -r /usr/bin/tcpdump
 ```shell
 ffmpeg -i video.mp4 -vn -acodec copy audio.mp4
 ffmpeg -i video.mp4 -vn -ar 16000  -ac 1 -ab 64k -acodec libmp3lame audio.mp3
+ffmpeg -i video.mp4 -vn -acodec pcm_s16le -f s16le -ac 1 audio.pcm
 ffmpeg -i input.mov -map 0:a:0 -c copy output.mov
 ```
 
