@@ -36,6 +36,7 @@ find . -type f -name "*.log" | xargs cat | grep -E -i -w "word1|word2|word3" -C1
 ```shell
 find . -type f -iname "*.py" -exec grep -Hi "import pandas as pd" '{}' + | grep -v "#"
 find . -type f -iname "*.py" -exec grep --color=always -Hi "import jieba" '{}' + 2>/dev/null | grep -v ".check"
+rg -g '*.py' -g '*.ipynb' 'import torch' /code
 ```
 
 ## Check archives in current directory for errors
