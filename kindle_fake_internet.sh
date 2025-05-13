@@ -58,7 +58,7 @@ fi
 # Configure nginx for HTTPS if not already configured
 if [ ! -f /etc/nginx/sites-available/kindle ]; then
     echo "Configuring nginx for HTTPS..."
-    cat >/etc/nginx/sites-available/kindle <<EOL
+    cat >/etc/nginx/sites-available/kindle <<-'EOF'
 server {
     listen 443 ssl;
     server_name *.amazon.com;
@@ -71,7 +71,7 @@ server {
         add_header Content-Type application/json;
     }
 }
-EOL
+EOF
 else
     echo "nginx configuration already exists"
 fi
