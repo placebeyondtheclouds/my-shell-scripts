@@ -30,7 +30,7 @@ else
             update_mac
         done
     else
-        wifiif=$(echo "$wifiifnum" | sed -n "$wifiifnum"p)
+        wifiif=$(echo "$wifiifall" | sed -n "${wifiifnum}p")
         update_mac
     fi
 fi
