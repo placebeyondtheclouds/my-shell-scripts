@@ -366,3 +366,7 @@ ffmpeg -i input.mov -map 0:a:0 -c copy output.mov
 ## fake internet for a kindle
 
 Trick kindle to connect to a hostapd WiFi access point running on a debian machine without Internet access, [kindle_fake_internet.sh](kindle_fake_internet.sh)
+
+## file downloader
+
+[downloader.sh](downloader.sh)
