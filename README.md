@@ -234,15 +234,11 @@ nc -v -l -p 8080 | tar -xzvf -
 tar -czvf - /path/to/dir | nc -v ip 8080 -q1
 ```
 
-## Get TBW (Total Bytes Written) for all drives that support the attribute
-
-TBW is calculated as `total LBA writes * physical block size`. Different drives have different physical block sizes, the exact value should be taken from the SMART report. Total LBA writes is stored in different attributes for different manufacturers. Intel also counts it differently, the raw value is increased by 1 for every 65,536 sectors (32MB) written by the host.
-
-The script for TBW [tbw.sh](tbw.sh)
-
 ## drives
 
-find the physical slot of a drive in a server [finddrive.sh](finddrive.sh)
+- Get TBW (Total Bytes Written) for all drives that support the attribute. TBW is calculated as `total LBA writes * physical block size`. Different drives have different physical block sizes, the exact value should be taken from the SMART report. Total LBA writes is stored in different attributes for different manufacturers. Intel also counts it differently, the raw value is increased by 1 for every 65,536 sectors (32MB) written by the host. The script for TBW [tbw.sh](tbw.sh)
+- find the physical slot of a drive in a server [finddrive.sh](finddrive.sh)
+- list drives and partitions: `lsblk -o NAME,SIZE,FSTYPE,TYPE,MOUNTPOINT,PHY-SEC,HCTL,MODEL,SERIAL`
 
 ## Find a message in dmesg logs and convert the timestamps to human-readable format
 
