@@ -2,7 +2,7 @@
 
 # start multiple ollama serve instances for use with other scripts
 
-# usage: CUDA_VISIBLE_DEVICES=0,1 ollamaparallel
+echo "usage: CUDA_VISIBLE_DEVICES=0,1 ./ollamaparallel.sh"
 
 #start at
 PORT=11435

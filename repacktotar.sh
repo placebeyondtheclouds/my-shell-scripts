@@ -10,6 +10,8 @@ controlc() {
     exit 1
 }
 
+trap controlc SIGINT
+
 declare -a archivefiles
 IFS=$'\n'
 
@@ -18,8 +20,6 @@ for line in $(find . -type f \( -name "*.7z" -o -name "*.rar" -o -name "*.zip" \
 done
 
 for ((archno = 0; archno < ${#archivefiles[@]}; archno++)); do
-    trap controlc SIGINT
-
     archivefile="${archivefiles[$archno]}"
     echo -e "\nProcessing $archivefile"
     echo -n "testing $archivefile..."

@@ -6,13 +6,14 @@ controlc() {
     exit 1
 }
 
+trap controlc SIGINT
+
 messagetolookfor="error while accepting TLS connection"
 
 journalctl | grep "$messagetolookfor" >errors.txt
 cat errors.txt | cut -d ":" -f 9 | tr -d "]" >errorips.txt
 
 sort errorips.txt | uniq | grep -v '^$' | while read ip; do
-    trap controlc SIGINT
     echo -n "$ip":
     {
         whois "$ip" | grep country -i -m 1 | cut -d ':' -f 2 | xargs -0

@@ -6,13 +6,14 @@ controlc() {
     exit 1
 }
 
+trap controlc SIGINT
+
 messagetolookfor="Rejecting connection with bad upgrade request"
 
 journalctl | grep "$messagetolookfor" >badreqs.txt
 cat badreqs.txt | cut -d ":" -f 9 | tr -d "]" >rejectedips.txt
 
 sort rejectedips.txt | uniq -c | grep -v '^$' | sort -nr | while read count ip; do
-    trap controlc SIGINT
     echo -n "$ip":
     {
         echo -n "Count: "

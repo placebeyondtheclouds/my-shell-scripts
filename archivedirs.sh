@@ -4,6 +4,8 @@ controlc() {
     exit 1
 }
 
+trap controlc SIGINT
+
 ARCHIVE_DESTINATION=${1:-.}
 SKIPKEYWORD=".ipynb_checkpoints"
 
@@ -31,7 +33,6 @@ echo "${alldirs[@]}"
 echo "archive to $ARCHIVE_DESTINATION"
 read -p "Press enter to continue"
 for onedir in "${alldirs[@]}"; do
-    trap controlc SIGINT
     echo "Archiving $onedir..."
     if [ -f "$ARCHIVE_DESTINATION/$onedir.tar" ]; then
         rm -f "$ARCHIVE_DESTINATION/$onedir.tar"
@@ -50,7 +51,6 @@ done
 
 # test
 # for onearchive in "${archivefiles[@]}"; do
-#     trap controlc SIGINT
 #     echo -n "Testing $onearchive..."
 #     tar -tf "$onearchive" >/dev/null 2>&1
 #     if [ $? -ne 0 ]; then
@@ -82,6 +82,5 @@ done
 
 #extract
 # for onearchive in ${archivefiles[@]}; do
-#     trap controlc SIGINT
 #     tar -xf "$onearchive"
 # done

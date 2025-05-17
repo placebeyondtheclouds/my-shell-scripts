@@ -9,8 +9,9 @@ controlc() {
     exit 1
 }
 
+trap controlc SIGINT
+
 cat $1 | while read link; do
-    trap controlc SIGINT
     if [ -n "$link" ]; then
         fname=$(echo "$link" | cut -d "/" -f 6)
         if [ -f $fname ]; then

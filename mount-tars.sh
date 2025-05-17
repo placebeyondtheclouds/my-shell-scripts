@@ -6,6 +6,8 @@ controlc() {
     exit 1
 }
 
+trap controlc SIGINT
+
 echo "Test if ratarmount is installed..."
 if ! ratarmount -v; then
     echo -e "\n\n\nratarmount not found. activate conda environment with ratarmount installed first or install it with \nconda install -c conda-forge ratarmount \nor\npip install ratarmount\nquitting."
@@ -141,7 +143,6 @@ EOF
 
 mount() {
     for ((i = 0; i < ${#archivefiles[@]}; i++)); do
-        trap controlc SIGINT
         basename="${archivefiles[$i]##*/}"
         destination="$MOUNT_DESTINATION/${basename}"
 
@@ -156,7 +157,6 @@ mount() {
 
 unmount() {
     for onedir in "${alldirs[@]}"; do
-        trap controlc SIGINT
         echo "Unmounting $onedir..."
         ratarmount -u "$onedir"
         if [[ -d "$onedir" ]]; then
