@@ -369,7 +369,7 @@ Trick kindle to connect to a hostapd WiFi access point running on a debian machi
 
 ## add a self-signed SSL cert to a service, with websocket support (for testing only)
 
-the script: [add_ssl.sh](add_ssl.sh), more about it here:[link]
+the script: [add_ssl.sh](add_ssl.sh), more about it in the post here: [the blogpost](https://placebeyondtheclouds.github.io/posts/add-ssl/)
 
 ```shell
 sudo ./add_ssl.sh 8080 8081 servicename
