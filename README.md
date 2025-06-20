@@ -299,6 +299,17 @@ done
   done
   ```
 
+- rotate 90 degrees
+
+  ```shell
+  mkdir -p rotated
+  IFS=$'\n'
+  for file in $(ls | grep -a -i -e ".jpg"); do
+  convert "$file" -rotate 90 rotated/"$file"
+  echo "$file -> rotated/$file"
+  done
+  ```
+
 - another way is to use ffmpeg:
 
   ```shell
