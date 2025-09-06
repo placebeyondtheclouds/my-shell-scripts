@@ -370,6 +370,12 @@ ffmpeg -i video.mp4 -vn -acodec pcm_s16le -f s16le -ac 1 audio.pcm
 ffmpeg -i input.mov -map 0:a:0 -c copy output.mov
 ```
 
+## calculate total duration
+
+```shell
+find . -name "*.mov" -exec ffprobe -v quiet -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 {} \; | awk '{s+=$1} END {printf "Total duration: %02d:%02d:%02d\n", s/3600, (s%3600)/60, s%60}'
+```
+
 ## fake internet for a kindle
 
 Trick kindle to connect to a hostapd WiFi access point running on a debian machine without Internet access, [kindle_fake_internet.sh](kindle_fake_internet.sh)
@@ -385,3 +391,7 @@ the script: [add_ssl.sh](add_ssl.sh), more about it in the post here: [the blogp
 ```shell
 sudo ./add_ssl.sh 8080 8081 servicename
 ```
+
+## reset usb controllers on debian
+
+[script](https://unix.stackexchange.com/a/704342)
