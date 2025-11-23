@@ -395,3 +395,9 @@ sudo ./add_ssl.sh 8080 8081 servicename
 ## reset usb controllers on debian
 
 [script](https://unix.stackexchange.com/a/704342)
+
+## sort files by file size
+
+```shell
+find . -type f -exec du -h {} + | sort -rh | head -n10
+```
