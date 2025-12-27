@@ -299,6 +299,17 @@ done
   done
   ```
 
+  - lower the jpg quality
+
+  ```shell
+  mkdir -p compressed
+  IFS=$'\n'
+  for file in $(ls | grep -a -i -e ".jpg"); do
+  convert "$file" -quality 40 compressed/"$file"
+  echo "$file -> compressed/$file"
+  done
+  ```
+
 - rotate 90 degrees
 
   ```shell
@@ -401,3 +412,7 @@ sudo ./add_ssl.sh 8080 8081 servicename
 ```shell
 find . -type f -exec du -h {} + | sort -rh | head -n10
 ```
+
+## restart audio in Ubuntu
+
+`sudo alsa force-reload`
