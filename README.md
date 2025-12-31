@@ -416,3 +416,18 @@ find . -type f -exec du -h {} + | sort -rh | head -n10
 ## restart audio in Ubuntu
 
 `sudo alsa force-reload`
+
+## restart touchpad on Ubuntu
+
+```shell
+lsmod | grep touch
+
+sudo rmmod hid_multitouch
+sudo modprobe hid_multitouch
+```
+
+## download a large file
+
+```shell
+while ! curl -C - -O https://localhost/file; do sleep 10; done
+```
