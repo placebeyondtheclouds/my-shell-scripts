@@ -435,5 +435,5 @@ while ! curl -C - -O https://localhost/file; do sleep 10; done
 ## count Chinese characters in plaintext files
 
 ```shell
-find . -type f -name "*.md" -exec cat '{}' + | grep -o -P '[\x4e00-\x9FFF]' | wc --chars
+find .  -maxdepth 1 -mindepth 1 -type f -name "*.md" -exec cat '{}' + | grep -o -P '[\x4e00-\x9FFF]' | wc --chars
 ```
