@@ -101,7 +101,6 @@ zcat cv-corpus-15.0-2023-09-08-ca.tar.gz > cv-corpus-15.0-2023-09-08-ca.tar
 relative paths, current directory with it's subdirectories, overwrites existing checksum file
 
 - on a MacOS:
-
   - create:
 
     ```shell
@@ -120,7 +119,6 @@ relative paths, current directory with it's subdirectories, overwrites existing 
     ```
 
 - on Linux:
-
   - create:
 
     ```shell
@@ -143,7 +141,6 @@ relative paths, current directory with it's subdirectories, overwrites existing 
 relative paths, current directory only
 
 - on Linux:
-
   - create:
 
     ```shell
@@ -161,7 +158,6 @@ relative paths, current directory only
 relative paths, current directory with it's subdirectories, one checksum file per directory, doesn't overwrite existing checksum files, displays progress. https://askubuntu.com/questions/318530/generate-md5-checksum-for-all-files-in-a-directory
 
 - on Linux:
-
   - create:
 
     ```shell
@@ -326,6 +322,17 @@ done
   ```shell
   ffmpeg -i image.jpeg -map_metadata -1 -c:v copy stripped.jpeg
   exiftool -if '$gps*' -gps* "stripped.jpeg"
+  ```
+
+- jpg -> OCR (Russian) -> pdf
+
+  ```shell
+  sudo sed -i '/<policy domain="resource" name="memory"/ s/value="1024MiB"/value="30GiB"/' /etc/ImageMagick-6/policy.xml
+  for f in *.jpg; do convert "$f" -colorspace gray -fill white -resize 200% -sharpen 0x1 "bw/$f"; echo "."; done
+  convert $(ls -v ./bw/*.jpg) in.pdf
+
+  sudo apt install tesseract-ocr ghostscript tesseract-ocr-script-cyrl tesseract-ocr-rus ocrmypdf
+  ocrmypdf -l rus --output-type pdfa in.pdf out.pdf
   ```
 
 ## batch rename files
