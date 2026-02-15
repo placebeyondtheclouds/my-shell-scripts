@@ -59,6 +59,12 @@ grep --color=always -rn '.' --include \*.sh -ie "/dev/tcp/" 2>/dev/null
 grep --color=always -rn '/' -ie "password" 2>/dev/null
 ```
 
+## find a string in all pdfs
+
+```shell
+find . -type f -name "*.pdf" -exec pdftotext {} - \; | grep "Python"
+```
+
 ## start multiple ollama serve
 
 [ollamaparallel.sh](ollamaparallel.sh)
@@ -447,4 +453,4 @@ find .  -maxdepth 1 -mindepth 1 -type f -name "*.md" -exec cat '{}' + | grep -o 
 
 ## check an URL for size change twice a day
 
-`check_url.sh https://placebeyondtheclouds.github.io/`
+`./check_url.sh https://placebeyondtheclouds.github.io/`
