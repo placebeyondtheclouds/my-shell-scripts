@@ -444,3 +444,7 @@ while ! curl -C - -O https://localhost/file; do sleep 10; done
 ```shell
 find .  -maxdepth 1 -mindepth 1 -type f -name "*.md" -exec cat '{}' + | grep -o -P '[\x4e00-\x9FFF]' | wc --chars
 ```
+
+## check an URL for size change twice a day
+
+`check_url.sh https://placebeyondtheclouds.github.io/`
