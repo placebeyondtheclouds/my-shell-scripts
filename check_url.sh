@@ -9,25 +9,16 @@ if [ -z "$URL" ]; then
 fi
 
 size() {
-    curl -fsSL "$URL" 2>/dev/null | wc -c
+    curl -fsSL "$URL" 2>/dev/null \
+        | LC_ALL=C tr -cd '\11\12\15\40-\176' \
+        | wc -c
 }
 
-s1=$(size)
-s2=$(size)
-s3=$(size)
-
-baseline=$(((s1 + s2 + s3) / 3))
-min=$s1
-max=$s1
-[ "$s2" -lt "$min" ] && min=$s2
-[ "$s3" -lt "$min" ] && min=$s3
-[ "$s2" -gt "$max" ] && max=$s2
-[ "$s3" -gt "$max" ] && max=$s3
-
-margin=$((max - min))
-[ "$margin" -lt 100 ] && margin=100
+baseline=$(size)
+margin=50
 
 low=$((baseline - margin))
+[ "$low" -lt 0 ] && low=0
 high=$((baseline + margin))
 
 echo "Baseline=${baseline}B Range=${low}-${high}B"
