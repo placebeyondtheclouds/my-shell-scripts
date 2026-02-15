@@ -328,7 +328,7 @@ done
 
   ```shell
   sudo sed -i '/<policy domain="resource" name="memory"/ s/value="1024MiB"/value="30GiB"/' /etc/ImageMagick-6/policy.xml
-  for f in *.jpg; do convert "$f" -colorspace gray -fill white -resize 200% -sharpen 0x1 "bw/$f"; echo "."; done
+  for f in *.jpg; do convert "$f" -colorspace gray -fill white -resize 200% -sharpen 0x1 "bw/$f"; echo -n "."; done
   convert $(ls -v ./bw/*.jpg) in.pdf
 
   sudo apt install tesseract-ocr ghostscript tesseract-ocr-script-cyrl tesseract-ocr-rus ocrmypdf
