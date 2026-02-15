@@ -15,7 +15,7 @@ size() {
 }
 
 baseline=$(size)
-margin=50
+margin=10
 
 low=$((baseline - margin))
 [ "$low" -lt 0 ] && low=0
