@@ -59,10 +59,10 @@ grep --color=always -rn '.' --include \*.sh -ie "/dev/tcp/" 2>/dev/null
 grep --color=always -rn '/' -ie "password" 2>/dev/null
 ```
 
-## find a string in all pdfs
+## find a string in all pdfs in current directory
 
 ```shell
-find . -type f -name "*.pdf" -exec pdftotext {} - \; | grep "Python"
+find . -type f -name '*.pdf' -print0 | xargs -0 -n1 -P4 sh -c 'pdftotext -q "$1" - 2>/dev/null | grep -ni --label="$1" -H stringtolookfor' sh
 ```
 
 ## start multiple ollama serve
