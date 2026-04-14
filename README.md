@@ -262,7 +262,7 @@ done
 - remove exif data from all images in the current directory
 
   ```shell
-  exiftool -all= *.jpg -overwrite_original
+  exiftool -all= *.jpg
   ```
 
 - rename the files with date and time from exif data
