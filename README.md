@@ -262,7 +262,7 @@ done
 - remove exif data from all images in the current directory
 
   ```shell
-  exiftool -all= *.jpg
+  exiftool -all= *.jpg -overwrite_original
   ```
 
 - rename the files with date and time from exif data
@@ -280,13 +280,14 @@ done
   done
   ```
 
-- convert png to jpg
+- convert images to jpg
 
   ```shell
   IFS=$'\n'
-  for file in $(ls | grep -a -i -e ".png"); do
-  convert "$file" "${file%.png}.jpg"
-  echo "$file -> ${file%.png}.jpg"
+  extension=".HEIC"
+  for file in $(ls | grep -a -i -e "$extension"); do
+  convert "$file" "${file%$extension}.jpg"
+  echo "$file -> ${file%$extension}.jpg"
   done
   ```
 
