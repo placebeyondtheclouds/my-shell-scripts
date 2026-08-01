@@ -395,6 +395,63 @@ ffmpeg -i video.mp4 -vn -acodec pcm_s16le -f s16le -ac 1 audio.pcm
 ffmpeg -i input.mov -map 0:a:0 -c copy output.mov
 ```
 
+## convert HDR video
+
+convert iPhone's 10-bit HLG HDR in BT.2020 to Rec.709. use `ffmpeg -ss 00:00:10 -i "video.MOV" -t 10 ` to encode a test. set the kdenlive project to Rec.709 profile.
+
+```shell
+#for editing
+ffmpeg \
+-hwaccel cuda \
+-hwaccel_device 0 \
+-i "video.MOV" \
+-map 0:v:0 -map 0:a? \
+-vf "zscale=min=2020_ncl:rin=limited:pin=2020:tin=arib-std-b67:t=linear:npl=100,\
+format=gbrpf32le,\
+tonemap=tonemap=hable:desat=1,\
+zscale=tin=linear:p=709:m=709:t=709:r=limited,\
+format=yuv422p10le" \
+-c:v prores_ks \
+-profile:v 1 \
+-quant_mat auto \
+-pix_fmt yuv422p10le \
+-color_primaries bt709 \
+-color_trc bt709 \
+-colorspace bt709 \
+-color_range tv \
+-c:a aac \
+-b:a 192k \
+"video.MOV_rec709_prores_lt.mov"
+
+
+#more compression
+ffmpeg \
+-hwaccel cuda \
+-hwaccel_device 0 \
+-i "video.MOV" \
+-map 0:v:0 -map 0:a? \
+-vf "zscale=min=2020_ncl:rin=limited:pin=2020:tin=arib-std-b67:t=linear:npl=100,\
+format=gbrpf32le,\
+tonemap=tonemap=hable:desat=1,\
+zscale=tin=linear:p=709:m=709:t=709:r=limited,\
+format=p010le" \
+-c:v hevc_nvenc \
+-profile:v main10 \
+-pix_fmt p010le \
+-preset p6 \
+-tune hq \
+-rc vbr \
+-cq 20 \
+-b:v 0 \
+-color_primaries bt709 \
+-color_trc bt709 \
+-colorspace bt709 \
+-color_range tv \
+-c:a aac \
+-b:a 192k \
+"video_rec709_10bit.mp4"
+```
+
 ## calculate total duration
 
 ```shell
