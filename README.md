@@ -382,6 +382,12 @@ ssh $USER@192.168.3.200 tcpdump -i eth0 -U -s0 -w - 'port not 22' | sudo wiresha
 ssh -t $USER@192.168.3.200 sudo setcap -r /usr/bin/tcpdump
 ```
 
+## output probe requests from a pcap
+
+```bash
+tcpdump -r file.pcap | grep -oE '\([^)]+\)' | tr -d '()' | sort -u
+```
+
 ## change wifi adapter mac address
 
 [wifimac.sh](wifimac.sh)
@@ -512,3 +518,11 @@ find .  -maxdepth 1 -mindepth 1 -type f -name "*.md" -exec cat '{}' + | grep -o 
 ## check an URL for size change twice a day
 
 `./check_url.sh https://placebeyondtheclouds.github.io/`
+
+## mount ios directory inside iSH
+
+```bash
+apk add python3
+mkdir shared && cd shared
+mount -t ios ish-shared ~/shared
+```
