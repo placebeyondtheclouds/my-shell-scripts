@@ -458,6 +458,24 @@ format=p010le" \
 "video_rec709_10bit.mp4"
 ```
 
+recompress 1080p into a smaller 720p:
+
+```bash
+ffmpeg -i "video.mp4" \
+-vf "scale=-2:720" \
+-c:v h264_nvenc \
+-preset p6 \
+-tune hq \
+-rc vbr \
+-b:v 2600k \
+-maxrate 3000k \
+-bufsize 6000k \
+-c:a aac \
+-b:a 128k \
+-movflags +faststart \
+"video-720p.mp4"
+```
+
 ## calculate total duration
 
 ```shell
