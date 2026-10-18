@@ -551,3 +551,11 @@ apk add python3
 mkdir shared && cd shared
 mount -t ios ish-shared ~/shared
 ```
+
+## webcam QR reader
+
+`sudo apt install zbar-tools`
+
+```bash
+zbarcam --raw --prescale=1280x720 /dev/video0
+```
