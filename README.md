@@ -559,3 +559,9 @@ mount -t ios ish-shared ~/shared
 ```bash
 zbarcam --raw --prescale=1280x720 /dev/video0
 ```
+
+## covert docx to markdown
+
+```bash
+pandoc input.docx -f docx -t markdown --wrap=none --extract-media=./media -o output.md
+```
